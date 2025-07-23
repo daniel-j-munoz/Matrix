@@ -9,10 +9,14 @@ using namespace cv;
 
 int main(){
    
-    Matrix image(1080, 1080);
+    Matrix image(246, 400);
     image.randomize(0.0f, 255.0f); 
-    imshow("", image.to_mat());
-    cv::waitKey(0);
-    return 0;
+    image.guassian_blur(13, 2.0f);
+    image.invert();
+    image.scale(5.0f);
+    image.save_as_image("thing.png", true);
+    // imshow("", image.to_mat());
+    // cv::waitKey(0);
+    // return 0;
 
 }
