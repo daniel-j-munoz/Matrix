@@ -1,0 +1,7 @@
+// so this matrix doesn't just include matrix stuff. 
+// it also includes the ability to display images. 
+// what if we do the saem for audio? 
+// display audio? via 1d signals? 
+
+// later of course maybe use lighter packages. opencv is pretty big. 
+// and maybe u just want something simple to get image data, output images and display stuff. 
