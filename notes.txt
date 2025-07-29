@@ -1,7 +1,41 @@
-// so this matrix doesn't just include matrix stuff. 
-// it also includes the ability to display images. 
-// what if we do the saem for audio? 
-// display audio? via 1d signals? 
+so this matrix doesn't just include matrix stuff. 
+it also includes the ability to display images. 
+what if we do the saem for audio? 
+display audio? via 1d signals? 
 
-// later of course maybe use lighter packages. opencv is pretty big. 
-// and maybe u just want something simple to get image data, output images and display stuff. 
+later of course maybe use lighter packages. opencv is pretty big. 
+and maybe u just want something simple to get image data, output images and display stuff. 
+
+
+maybe implement in differnt type of matrix class
+that works w/ generalized vector functions and stuff 
+and essentially implment like jacobian matrix? 
+that would be pretty cool.
+
+// FIXED ................... 
+    dot product and magnitude. wasn't updating correctly
+
+
+
+// mean image? 
+// std image? 
+// dot image w/ mean to test if 
+// it's of that class? 
+// softmax the outputs?
+
+
+weighted average of images?
+
+
+
+instead of something like randomize_row()
+what if we do 
+Matrix row(1, 5);
+row.randomize(); 
+set_row(row); 
+// ?? 
+// yes or no?
+// stuff like scale_row is still helpful though...
+
+
+// set sub region method?

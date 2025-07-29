@@ -1,0 +1,5 @@
+here histogram equalization is used before hand. 
+and as you can see. the difference is tremendous
+
+
+Hist Eq works by turning histgoram of image into a uniform distribution? 

@@ -39,7 +39,8 @@ class Matrix {
 
         // ........... FFT & Convolution .................................
         void FFT2D();
-        void convolve(Matrix& kernel, bool flip); 
+        void convolve(Matrix& kernel, bool flip);
+        void convolve_me(Matrix& kernel, bool flip);  
         void convolve_valid(Matrix& kernel, bool flip); // stride length, padding parameters?
         void convolve_validd(Matrix& kernel, int m, int n, bool flip);
         void convolve_seperable(Matrix& kernel);
@@ -181,4 +182,8 @@ class Matrix {
         static vector<complex<float>> merge_real_and_imag(vector<float>& real, vector<float>& imag);
         void normalized_correlate(Matrix& kernel);
         void zero_mean_unit_std();
+
+
+
+        void histogram_equalization(); 
 };

@@ -14,10 +14,21 @@
                 "app",
                 "-Iimports/opencv/include/opencv4",
                 "-Limports/opencv/lib",
+                // "-lopencv_core",
+                // "-lopencv_imgcodecs",
+                // "-lopencv_highgui",
+                // "-lopencv_imgproc",
+
+                // Video Stuff
                 "-lopencv_core",
+                "-lopencv_imgproc", 
                 "-lopencv_imgcodecs",
                 "-lopencv_highgui",
-                "-lopencv_imgproc",
+                "-lopencv_videoio",
+                "-lopencv_video",
+
+
+                
                 "&&",
                 "./app"
             ],

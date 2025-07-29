@@ -286,6 +286,26 @@ void Matrix::convolve_valid(Matrix& kernel, bool flip) {
     data = temp;
 }
 
+void Matrix::convolve_me(Matrix& kernel, bool flip) {
+    int half = kernel.M / 2;
+    int f = flip ? -1 : 1;
+    vector<float> temp = data; // Start with original data
+    
+    // Only convolve the valid region (where kernel fits completely)
+    for(int m = half; m < M - half; m++) {
+        for(int n = half; n < N - half; n++) {
+            float sum = 0.0f;
+            for(int k = -half; k <= half; k++) {
+                for(int h = -half; h <= half; h++) {
+                    sum += get(m - k * f, n - h * f) * kernel.get(k + half, h + half);
+                }
+            }
+            temp[m * N + n] = sum;
+        }
+    }
+    
+    data = temp;
+}
 
 
 
@@ -492,7 +512,7 @@ void Matrix::sep_conv_sobel_x(){
     Matrix horz(1, 3, data); 
     data = {1, 2, 1};
     Matrix vert(3, 1, data);
-    horz.scale(1.0f / 8.0f);
+    horz.scale(1.0f / 8.0f);  // scale or dont' scale?
 
     // create a sep conv method? takes in vert and horz components?
     // then create a get component for popular kernels like sobel and guassian
@@ -515,7 +535,7 @@ void Matrix::sep_conv_sobel_y(){
     Matrix horz(1, 3, data); 
     data = {-1, 0, 1};
     Matrix vert(3, 1, data);
-    horz.scale(1.0f / 8.0f);
+    horz.scale(1.0f / 8.0f); // scale or don't scale?
 
     // Horzitonal Convolution
     for(int m = 0; m < M; m++){
@@ -693,6 +713,8 @@ Matrix Matrix::element_wise(Matrix& other, char operation){
     return Matrix(M, N, new_data);
 }
 
+
+
 Matrix Matrix::operator+(Matrix& other){
     return element_wise(other, '+');
 }
@@ -713,18 +735,61 @@ Matrix Matrix::operator-=(Matrix& other){
     return *this;
 }
 
+// float Matrix::dot(Matrix& other){
+//     return element_wise(other, '*').sum(); 
+// }
+
+// Claude version on trying to handle numerical stability?
+// Corrected element-wise dot product with better numerical stability
 float Matrix::dot(Matrix& other){
-    element_wise(other, '*'); 
-    return sum();
+    if(!(M == other.M && N == other.N)){
+        cout << "Size Mismatch for dot product: "; 
+        cout << M << "x" << N << " & " << other.M << "x" << other.N << "\n";
+        throw invalid_argument("Matrix dimensions must match for element-wise dot product");
+    }
+    
+    double total = 0.0; // Use double for better precision during accumulation
+    for(int ith = 0; ith < data.size(); ith++){
+        double product = static_cast<double>(data[ith]) * static_cast<double>(other.data[ith]);
+        total += product;
+        
+        // Debug: Check for problematic values
+        if(!isfinite(product)) {
+            cout << "Non-finite product at index " << ith << ": " 
+                 << data[ith] << " * " << other.data[ith] << " = " << product << endl;
+        }
+    }
+    
+    float result = static_cast<float>(total);
+    
+    // Debug output for large results
+    if(abs(result) > 1000.0f) {
+        cout << "Warning: Large dot product result: " << result << endl;
+        
+        // Print some statistics
+        float max_this = *max_element(data.begin(), data.end());
+        float min_this = *min_element(data.begin(), data.end());
+        float max_other = *max_element(other.data.begin(), other.data.end());
+        float min_other = *min_element(other.data.begin(), other.data.end());
+        
+        cout << "This matrix range: [" << min_this << ", " << max_this << "]" << endl;
+        cout << "Other matrix range: [" << min_other << ", " << max_other << "]" << endl;
+    }
+    
+    if(!isfinite(result)) {
+        throw runtime_error("Numerical overflow in element-wise dot product");
+    }
+    
+    return result;
 }
 
 float Matrix::magnitude(){
-    element_wise(*this, '*');
-    return sqrt(sum());
+    return sqrt(element_wise(*this, '*').sum());
 }
 
 void Matrix::unit_mag(){
     scale(1.0f / magnitude());
+
 }
 
 void Matrix::unit_sum(){
@@ -1384,5 +1449,33 @@ void Matrix::save_as_image(string path, bool grayscale){
     output.range(0.0f, 255.0f);
     if(grayscale){
         imwrite(path, output.to_mat());
+    }
+}
+
+
+
+
+// histogram methods?
+
+void Matrix::histogram_equalization(){
+    // PDF 
+    Matrix pdf(1, 256);
+    for(float pixel : data){
+        pdf.data[round(pixel)]++;
+    }
+    pdf.unit_sum();
+
+    // CDF 
+    Matrix cdf(1, 256); 
+    float sum = 0.0f;
+    for(int ith = 0; ith < pdf.N; ith++){
+        sum += pdf.get(0, ith);
+        cdf.set(0, ith, sum);
+    }
+    cdf.scale(255.0f);
+
+    // Histogram Equalization. 
+    for(int ith = 0; ith < data.size(); ith++){
+        data[ith] = cdf.get(0, round(data[ith])); 
     }
 }
