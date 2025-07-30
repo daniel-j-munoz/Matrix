@@ -548,6 +548,23 @@ void Matrix::sep_conv_sobel_y(){
     }
 }
 
+
+/**
+ * @param a horizontal kernel
+ * @param b vertical kernel
+ */
+void Matrix::convolve_sep(Matrix& a, Matrix& b){
+    // Horzitonal Convolution
+    for(int m = 0; m < M; m++){
+        convolve_row(m, a); 
+    }
+
+    // Vertical Convolution on Intermediate Image
+    for(int n = 0; n < N; n++){
+        convolve_col(n, b);
+    }
+}
+
 // does % work here?
 Matrix* Matrix::ROI(int row, int col, int next_row, int next_col){
     Matrix* output = new Matrix(next_row - row + 1, next_col - col + 1, 0);

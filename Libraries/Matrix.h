@@ -44,6 +44,7 @@ class Matrix {
         void convolve_valid(Matrix& kernel, bool flip); // stride length, padding parameters?
         void convolve_validd(Matrix& kernel, int m, int n, bool flip);
         void convolve_seperable(Matrix& kernel);
+        void convolve_sep(Matrix& a, Matrix& b); 
 
         // ................. Pooling ...................................................
         // max_pool and avg pool in 1D as well? 
