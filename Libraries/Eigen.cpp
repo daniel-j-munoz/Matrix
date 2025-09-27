@@ -1,0 +1,100 @@
+#include "Eigen.h"
+
+
+// you get a new matrix every iteration of QR algo. 
+// perhaps we could graph the Greshgoni circles each iteration?.....
+// perhaps ew could see circles converge and stuff
+
+
+// better stopping criteria?..... 
+// or convergence criteria?....
+
+// say if it doesnt converge...??...
+Matrix Eigen::QR(Matrix A){
+    int N = 15;
+    float thresh = 1e-6;
+    Matrix past_A = A;
+
+    for(int i = 0; i < 1000; i++){
+        A.print(4);
+        cout << "\n";
+
+        save_gershgorin(A, to_string(i) + ".png");
+
+        vector<Matrix> QR = A.QR();
+        Matrix Q = QR.at(0);
+        Matrix R = QR.at(1);
+        past_A = A;
+        A = R * Q;
+
+        Matrix delta = A - past_A;
+        delta.absolute();
+        if(delta.min() < thresh){
+            cout << "converged\n";
+            
+            break;
+        }
+    }
+
+    A.print(4);
+    cout << "\n";
+    save_gershgorin(A, "final.png");
+
+    return A;
+}
+
+// complex valued Matrix?.....
+// use complex rather than float?....
+// make another matrix class for complex... im not sure....
+
+
+// also display gerhsorin?....
+
+/**
+ * @param name e.g. "image.png"
+ */
+void Eigen::save_gershgorin(Matrix A, string name){
+    float min_radius = 2.0f;
+
+    int WIDTH = 500; 
+    int HEIGHT = 500; 
+    Mat image = Mat::zeros(WIDTH, HEIGHT, CV_8UC3);
+
+    Matrix centers(A.M, 1);
+    vector<float> radii = {};
+
+    for(int j = 0; j < A.M; j++){
+        // Center at jth diagonal
+        float center = A.get(j, j);
+
+        // Radius
+        float sum = 0.0f;
+        for(int i = 0; i < A.N; i++){
+            if(!(i == j)){
+                sum += abs(A.get(j, i));   // is abs working here...?...
+            }
+        }
+
+        centers.set(j, 0, center);
+        radii.push_back(sum);
+    }
+
+    centers.range(
+        0 + radii.at(0), 
+        WIDTH - radii.at(radii.size() - 1)
+    );
+
+    // Gershgorin Circles
+    int scale = 10;
+    for(int i = 0; i < A.M; i++){
+        circle(
+            image, 
+            Point(centers.get(i, 0), HEIGHT / 2), // Center
+            scale * radii.at(i) + min_radius, // Radius
+            Scalar(0, 255, 0), // Color
+            -1 // Fill
+        );
+    }
+
+    imwrite("gershgorin/" + name, image);
+}

@@ -16,6 +16,10 @@ that would be pretty cool.
     dot product and magnitude. wasn't updating correctly
 
 
+// like i said before....
+// keep numbers as fractions and symbols and stuff...
+// dont immediatley turn into floating point to perhaps prevent information loss
+
 
 // mean image? 
 // std image? 
@@ -25,6 +29,15 @@ that would be pretty cool.
 
 
 weighted average of images?
+
+// Matrix w/ real values
+// Matrix w/ complex vauess?...
+Matrix w/ general functions as elements?.....
+// differnt Matrix fcclasses for each case??.... who knows....
+
+
+// diagonalize matrix?.... 
+// using eigen values and stuf...
 
 
 
@@ -39,3 +52,29 @@ set_row(row);
 
 
 // set sub region method?
+
+
+// svd?
+// QR?? 
+// LU?...
+
+
+// general p norm?.....
+// L infinite norm?....
+
+
+
+
+
+
+
+
+
+
+
+
+is this project actually gaining some value or no...?....
+perhaps we could publish this?.... of course keeping the code secertive...
+// or maybe open source....??.... who knows......?....
+// could there be a way to create value off of this......?....
+i am not sure....

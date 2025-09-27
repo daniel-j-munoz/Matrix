@@ -71,6 +71,9 @@ class Matrix {
         // Resize Methods? 
         void resize(int m, int n);
 
+        // ........ Factorization ..................
+        vector<Matrix> QR();
+
         // ............... Row & Col ................................................
         float get(int m, int n); 
         void set(int m, int n, float value);
@@ -93,6 +96,8 @@ class Matrix {
         Matrix* ROI(int row, int col, int next_row, int next_col);
 
         // ........................ Vector .........................................................
+
+        Matrix project(Matrix v);
 
         // ........... FFT & Convultion .....................................
         static void FFT(vector<complex<float>>& data);
@@ -158,6 +163,12 @@ class Matrix {
         void unit_std();
         void unit_mag(); 
         void unit_sum(); 
+
+
+        /**
+         * absolute value
+         */
+        void absolute();
 
 
         Matrix copy(); 

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 
+
 // ............. Constructors .....................................
 Matrix::Matrix(int M, int N, vector<float>& values){
     this->data = {};
@@ -625,7 +626,56 @@ void Matrix::FFT2D(){
     }
 }
 
+
+// Factorization ..................................................................................................................................................................
+
+// input is square matrix here... 
+// any real square matrix can be decomposed into qr. 
+// methods for non square?...
+vector<Matrix> Matrix::QR(){
+    vector<Matrix> U = {};
+
+    // Gram Schimdt Process
+    for(int k = 0; k < N; k++){
+        Matrix a = get_column(k);
+        Matrix sum(M, 1, 0.0f);
+        for(int j = 0; j < k; j++){
+            Matrix projection = a.project(U.at(j));
+            sum += projection;
+        }
+        U.push_back(a - sum);
+    }
+
+    Matrix Q(M, 0);  
+    for(Matrix column : U){
+        column.unit_mag();
+        Q.add_column(column.data);
+    }
+
+    Matrix R(M, N, 0);
+    for(int i = 0; i < N; i++){
+        Matrix a = get_column(i);
+        for(int j = 0; j <= i; j++){
+            Matrix e = Q.get_column(j);
+            R.set(j, i, a.dot(e));
+        }
+    }
+
+    return {Q, R};
+}
+
 // ............. 1D ...........................................................................................
+
+
+
+Matrix Matrix::project(Matrix v){
+    v.unit_mag();
+    v.scale(dot(v));
+    return v;
+}
+
+
+
 
 // flip argument? 
 void Matrix::convolve_row(int m, Matrix& kernel){
@@ -1089,6 +1139,9 @@ Matrix Matrix::expand_pixels(int size){
 // by changing the step size to something larger perhaps we could simplfy the data & find more repeating values? 
 // and allow for more compression? essentially it can make the image easier to work w/ data wise bassically
 // imagine having to store 255 differnt values. to just 25 differnt values and still perserve a decent amount of information
+
+// i guess its like integer multiplpes of the step size?.... im not sure to be honest...
+// very useful function though......
 void Matrix::step_change(float step){
     // so right now the step size can be really small e..g 5.0 -> 5.00001 
     // but what if you could change the step size to larger values 
@@ -1179,6 +1232,12 @@ void Matrix::unit_std(){
     }
 }
 
+
+void Matrix::absolute(){
+    for(int i = 0; i < data.size(); i++){
+        data[i] = abs(data.at(i));
+    }
+}
 
 
 // ................. miscellaneous ............................................................................................................................................
