@@ -808,52 +808,63 @@ Matrix Matrix::operator-=(Matrix& other){
 
 // Claude version on trying to handle numerical stability?
 // Corrected element-wise dot product with better numerical stability
+// float Matrix::dot(Matrix& other){
+//     if(!(M == other.M && N == other.N)){
+//         cout << "Size Mismatch for dot product: "; 
+//         cout << M << "x" << N << " & " << other.M << "x" << other.N << "\n";
+//         throw invalid_argument("Matrix dimensions must match for element-wise dot product");
+//     }
+    
+//     double total = 0.0; // Use double for better precision during accumulation
+//     for(int ith = 0; ith < data.size(); ith++){
+//         double product = static_cast<double>(data[ith]) * static_cast<double>(other.data[ith]);
+//         total += product;
+        
+//         // Debug: Check for problematic values
+//         if(!isfinite(product)) {
+//             cout << "Non-finite product at index " << ith << ": " 
+//                  << data[ith] << " * " << other.data[ith] << " = " << product << endl;
+//         }
+//     }
+    
+//     float result = static_cast<float>(total);
+    
+//     // Debug output for large results
+//     if(abs(result) > 1000.0f) {
+//         cout << "Warning: Large dot product result: " << result << endl;
+        
+//         // Print some statistics
+//         float max_this = *max_element(data.begin(), data.end());
+//         float min_this = *min_element(data.begin(), data.end());
+//         float max_other = *max_element(other.data.begin(), other.data.end());
+//         float min_other = *min_element(other.data.begin(), other.data.end());
+        
+//         cout << "This matrix range: [" << min_this << ", " << max_this << "]" << endl;
+//         cout << "Other matrix range: [" << min_other << ", " << max_other << "]" << endl;
+//     }
+    
+//     if(!isfinite(result)) {
+//         throw runtime_error("Numerical overflow in element-wise dot product");
+//     }
+    
+//     return result;
+// }
+
+
 float Matrix::dot(Matrix& other){
-    if(!(M == other.M && N == other.N)){
-        cout << "Size Mismatch for dot product: "; 
-        cout << M << "x" << N << " & " << other.M << "x" << other.N << "\n";
-        throw invalid_argument("Matrix dimensions must match for element-wise dot product");
+    // works for any sizes?... as long as same number of elemetns?....
+    float sum = 0.0f;
+    for(int i = 0; i < data.size(); i++){
+        sum += other.data[i] * data[i];
     }
-    
-    double total = 0.0; // Use double for better precision during accumulation
-    for(int ith = 0; ith < data.size(); ith++){
-        double product = static_cast<double>(data[ith]) * static_cast<double>(other.data[ith]);
-        total += product;
-        
-        // Debug: Check for problematic values
-        if(!isfinite(product)) {
-            cout << "Non-finite product at index " << ith << ": " 
-                 << data[ith] << " * " << other.data[ith] << " = " << product << endl;
-        }
-    }
-    
-    float result = static_cast<float>(total);
-    
-    // Debug output for large results
-    if(abs(result) > 1000.0f) {
-        cout << "Warning: Large dot product result: " << result << endl;
-        
-        // Print some statistics
-        float max_this = *max_element(data.begin(), data.end());
-        float min_this = *min_element(data.begin(), data.end());
-        float max_other = *max_element(other.data.begin(), other.data.end());
-        float min_other = *min_element(other.data.begin(), other.data.end());
-        
-        cout << "This matrix range: [" << min_this << ", " << max_this << "]" << endl;
-        cout << "Other matrix range: [" << min_other << ", " << max_other << "]" << endl;
-    }
-    
-    if(!isfinite(result)) {
-        throw runtime_error("Numerical overflow in element-wise dot product");
-    }
-    
-    return result;
+    return sum;
 }
 
 float Matrix::magnitude(){
     return sqrt(element_wise(*this, '*').sum());
 }
 
+// unit for differnt p norms in general ? and stuff...?
 void Matrix::unit_mag(){
     scale(1.0f / magnitude());
 

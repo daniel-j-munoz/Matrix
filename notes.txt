@@ -1,19 +1,12 @@
-so this matrix doesn't just include matrix stuff. 
-it also includes the ability to display images. 
-what if we do the saem for audio? 
-display audio? via 1d signals? 
-
-later of course maybe use lighter packages. opencv is pretty big. 
-and maybe u just want something simple to get image data, output images and display stuff. 
-
+Display Audio?... 
+Lighter Package?... Only include certain opencv stuff?...
 
 maybe implement in differnt type of matrix class
 that works w/ generalized vector functions and stuff 
 and essentially implment like jacobian matrix? 
 that would be pretty cool.
 
-// FIXED ................... 
-    dot product and magnitude. wasn't updating correctly
+
 
 
 // like i said before....
@@ -64,6 +57,8 @@ set_row(row);
 
 
 
+
+// output table w/ vectors & matricies in each slot?
 
 
 

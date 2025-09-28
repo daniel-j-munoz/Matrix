@@ -43,6 +43,91 @@ Matrix Eigen::QR(Matrix A){
     return A;
 }
 
+
+// ocnverges to one w/ hgihest absoolute eigenvalue?....
+// converges to spectral radius basically...
+
+// b is col vector. 
+// if row just transpose. not big deal. 
+// really just a convention. it could be a row vector as 
+// well if im not mistaken
+
+/**
+ * @param b Intial Eigenvector Guess
+ * Might converge to eigenvector associated w/ spectral radius
+ */
+Matrix Eigen::power(Matrix A, Matrix b){
+
+    float tol = 1e-6; // e.g. [0.999999, 1.000001]
+    Matrix past_b = b;
+    b.unit_mag();
+    b.print(2);
+    cout << "\n";
+
+    Matrix b_t = b.copy();
+    b_t.transpose(); 
+    Matrix temp = A * b; 
+    float lambda = b.dot(temp) / b.dot(b);
+    cout << "λ ≈ " << to_string(lambda) << "\n\n";
+
+    for(int i = 0; i < 10; i++){
+        past_b = b; 
+
+        // Eigen Vector
+        b = A * b;
+        b.unit_mag();
+        b.print(2);
+        cout << "\n";
+
+        // Eigen Value. Rayleigh Quotient
+        Matrix b_t = b.copy();
+        b_t.transpose(); 
+        Matrix temp = A * b; 
+        float lambda = b.dot(temp) / b.dot(b);
+        cout << "λ ≈ " << to_string(lambda) << "\n\n";
+
+        if(b.dot(past_b) <= 1.0f + tol && b.dot(past_b) >= 1.0f - tol){
+            cout << "converged\n";
+            break; 
+        }
+
+    }
+
+    
+    
+
+
+    
+    return b; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // if(
+        //     past_b.dot(b) <= 1.0f + tol && 
+        //     past_b.dot(b) >= 1.0f - tol
+        // ){
+        //     cout << "converged\n";
+        //     break;
+        // }
+
+
+
+
+
+
+
+
 // complex valued Matrix?.....
 // use complex rather than float?....
 // make another matrix class for complex... im not sure....
@@ -84,8 +169,13 @@ void Eigen::save_gershgorin(Matrix A, string name){
         WIDTH - radii.at(radii.size() - 1)
     );
 
+    // Real Axis
+    line(image, Point(0, HEIGHT / 2), Point(WIDTH, HEIGHT/2), Scalar(255, 255, 255), 1);
+
     // Gershgorin Circles
     int scale = 10;
+
+    // Circle
     for(int i = 0; i < A.M; i++){
         circle(
             image, 
@@ -94,6 +184,17 @@ void Eigen::save_gershgorin(Matrix A, string name){
             Scalar(0, 255, 0), // Color
             -1 // Fill
         );
+    }
+
+    // Center
+    for(int i = 0; i < A.M; i++){
+        circle(
+            image, 
+            Point(centers.get(i, 0), HEIGHT / 2), // Center
+            min_radius,
+            Scalar(0, 0, 255), // Color
+            -1 // Fill
+        ); 
     }
 
     imwrite("gershgorin/" + name, image);

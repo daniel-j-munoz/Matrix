@@ -27,10 +27,15 @@ int main(){
 
 
     
-    Matrix eigen = Eigen::QR(A);
+    // Matrix eigen = Eigen::QR(A);
 
 
-    // Eigen::display_gershgorin(A);
+    Matrix b(3, 1);
+    b.randomize(-10.0f, 10.0f);
+    Matrix eigenvector = Eigen::power(A, b);
+    // eigenvector.print(2);
+
+
 
 
 
