@@ -26,6 +26,9 @@ Matrix::Matrix(int M, int N, float value){
     }
 }
 
+/**
+ * Identity Matrix
+ */
 Matrix::Matrix(int M, int N){
     this->data = {};
     this->M = M; 
@@ -45,6 +48,9 @@ Matrix::Matrix(int M, int N){
 
 // ............. 2D ..................................... 
 // ................ Linear algebra operations and stuff ...............................................
+
+// what if operator takes in a float for another version as well. 
+// and can scale the vector/matrix or tensor or whatever... intereting....
 
 Matrix Matrix::operator*(Matrix& other) {
     // Check dimensions for matrix multiplication
@@ -658,6 +664,69 @@ vector<Matrix> Matrix::QR(){
         for(int j = 0; j <= i; j++){
             Matrix e = Q.get_column(j);
             R.set(j, i, a.dot(e));
+        }
+    }
+
+    return {Q, R};
+}
+
+/**
+ * QR via House Holder
+ */
+
+ // measure perforamnce differnce for differnt methods and way fo doing things?...
+
+ //  maybe don't copmute all house holders?... dpends on the speicifc case?.....
+ // might be useful for better computation?... who knows...
+
+ // i think this might work for any type of matrix?.... not just square matrix?...
+// can QRHH be better written more efficent?...
+// QR aitken method?.... 
+// accerlating convergece in someway?....
+
+vector<Matrix> Matrix::QRHH(){
+    Matrix Q(M, M); // Identity Matrix
+    Matrix R = *this; // A
+    vector<Matrix> HH = {}; // Householders
+
+    for(int k = 0; k < N; k++){
+        // Get Column Vector
+        Matrix x = R.get_column(k);
+
+        // Zero 
+        for(int i = 0; i < k; i++){
+            x.set(i, 0, 0.0f);
+        }
+
+        // Basis Vector
+        Matrix vec(M, 1, 0.0f); 
+        vec.set(k, 0, 1.0f);
+
+        // V
+        float sign = (x.get(k, 0) >= 0) ? 1.0f : -1.0f; /// NEW STEP HERE
+        vec.scale(sign * x.magnitude()); // ADDED SIGN *
+        x = x - vec; 
+
+        if(x.magnitude() > 1e-6){ // Avoid Division By Zero
+            x.unit_mag();
+
+            // Householder Matrix
+            Matrix I(M, M);
+            // H = I - 2(x*xt)
+            Matrix xt = x.copy();
+            xt.transpose();
+            vec = x * xt;
+            vec.scale(2);
+            Matrix H = I - vec;
+            HH.push_back(H);
+
+            // QR
+            Q = Q * H;
+            R = H * R;
+
+            cout << k << "\n";
+        } else {
+            break;
         }
     }
 

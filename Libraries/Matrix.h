@@ -73,6 +73,7 @@ class Matrix {
 
         // ........ Factorization ..................
         vector<Matrix> QR();
+        vector<Matrix> QRHH();
 
         // ............... Row & Col ................................................
         float get(int m, int n); 

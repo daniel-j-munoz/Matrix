@@ -6,7 +6,24 @@ that works w/ generalized vector functions and stuff
 and essentially implment like jacobian matrix? 
 that would be pretty cool.
 
+// ..................... The Idea of Tags ...................................... INTERESTING IDEA!!!
 
+Here is an inncredibly interesting thought. 
+What if we add the concept of tags to our Matrix class. 
+Take for example a Matrix that has feilds, symmetric, identity, hermite, 2x2 etc. 
+as booleans that can indicate properties of the matrix. E.g. if symmetric was set to true,
+we know that the matrix is symmetric. 
+
+And what if we also added a tag method that can essentially search for these properties 
+and tag them as true or false. 
+
+By doing this, other methods could exploit these circumstances to avoid unnessecary computation. 
+E.g. rather than having to perform Matrix multiplication w/ an idenitity matrix. 
+We could simply return the matrix as itself avoiding computation. 
+
+And perhaps we could also tag these matricies manually even. Who knows...
+
+// .................................................................................
 
 
 // like i said before....
@@ -59,6 +76,7 @@ set_row(row);
 
 
 // output table w/ vectors & matricies in each slot?
+
 
 
 

@@ -30,13 +30,21 @@ int main(){
     // Matrix eigen = Eigen::QR(A);
 
 
-    Matrix b(3, 1);
-    b.randomize(-10.0f, 10.0f);
-    Matrix eigenvector = Eigen::power(A, b);
+    // Matrix b(3, 1);
+    // b.randomize(-10.0f, 10.0f);
+    // Matrix eigenvector = Eigen::power(A, b);
     // eigenvector.print(2);
 
 
 
+    vector<Matrix> QR = A.QRHH(); 
+    QR.at(0).print(2);
+    cout << "\n";
+    QR.at(1).print(2);
+
+
+    cout << "\n";
+    (QR.at(0) * QR.at(1)).print(2);
 
 
     return 0;
@@ -44,4 +52,4 @@ int main(){
 
 
 
-
+// Min(m - 1, n) iterations? hhoulder method?...
