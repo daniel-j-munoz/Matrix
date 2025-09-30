@@ -14,6 +14,8 @@ using namespace cv;
 class Matrix {
     public: 
 
+    // Tags?....
+
         // float mean; // ???
         // float std; // ???
 
@@ -63,17 +65,16 @@ class Matrix {
 
    
 
-        void rref(); 
-        void transpose(); 
+        Matrix T(); 
         float determinant(); 
-        // inverse
+        // inverse.    adj / det
 
         // Resize Methods? 
         void resize(int m, int n);
 
-        // ........ Factorization ..................
-        vector<Matrix> QR();
-        vector<Matrix> QRHH();
+        // Obtain a similar triadognal matrix
+        // Retains Eigenvalues
+        Matrix upper_hessenberg();
 
         // ............... Row & Col ................................................
         float get(int m, int n); 

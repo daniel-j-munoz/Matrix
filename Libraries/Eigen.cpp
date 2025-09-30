@@ -1,5 +1,23 @@
 #include "Eigen.h"
+#include "Factor.h"
 
+
+Matrix gershgorin_radii(Matrix A){
+    vector<float> radii = {};
+
+    for(int j = 0; j < A.M; j++){
+        // Radius
+        float sum = 0.0f;
+        for(int i = 0; i < A.N; i++){
+            if(!(i == j)){
+                sum += abs(A.get(j, i));   // is abs working here...?...
+            }
+        }
+        radii.push_back(sum);
+    }
+
+    return Matrix(radii.size(), 1, radii);
+}
 
 // you get a new matrix every iteration of QR algo. 
 // perhaps we could graph the Greshgoni circles each iteration?.....
@@ -11,27 +29,24 @@
 
 // say if it doesnt converge...??...
 Matrix Eigen::QR(Matrix A){
-    int N = 15;
-    float thresh = 1e-6;
+
+    float thresh = 1e-1;
     Matrix past_A = A;
 
-    for(int i = 0; i < 1000; i++){
+    for(int i = 0; i < 100; i++){
         A.print(4);
         cout << "\n";
 
         save_gershgorin(A, to_string(i) + ".png");
 
-        vector<Matrix> QR = A.QR();
+        vector<Matrix> QR = Factor::QR(A); // Use QR or HHQR?....
         Matrix Q = QR.at(0);
         Matrix R = QR.at(1);
         past_A = A;
         A = R * Q;
 
-        Matrix delta = A - past_A;
-        delta.absolute();
-        if(delta.min() < thresh){
+        if(gershgorin_radii(A).max() < thresh){
             cout << "converged\n";
-            
             break;
         }
     }
@@ -64,8 +79,7 @@ Matrix Eigen::power(Matrix A, Matrix b){
     b.print(2);
     cout << "\n";
 
-    Matrix b_t = b.copy();
-    b_t.transpose(); 
+    Matrix b_t = b.T();
     Matrix temp = A * b; 
     float lambda = b.dot(temp) / b.dot(b);
     cout << "λ ≈ " << to_string(lambda) << "\n\n";
@@ -80,8 +94,7 @@ Matrix Eigen::power(Matrix A, Matrix b){
         cout << "\n";
 
         // Eigen Value. Rayleigh Quotient
-        Matrix b_t = b.copy();
-        b_t.transpose(); 
+        Matrix b_t = b.T();
         Matrix temp = A * b; 
         float lambda = b.dot(temp) / b.dot(b);
         cout << "λ ≈ " << to_string(lambda) << "\n\n";
@@ -199,3 +212,4 @@ void Eigen::save_gershgorin(Matrix A, string name){
 
     imwrite("gershgorin/" + name, image);
 }
+

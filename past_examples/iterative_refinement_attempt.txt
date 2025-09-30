@@ -1,0 +1,63 @@
+here was my attempt. im not sure went wrong and stuff im not sure....
+
+
+
+/**
+ * @param x Intial Guess
+ * @param w Relaxation Factor Omega (1.0f -> Guass Seidel)
+ */
+Matrix Solve::gauss_seidel(Matrix A, Matrix x, float w){
+
+    float thresh = 1e-3;
+    int size = x.data.size(); 
+    Matrix past_x = x;
+
+    bool exit = false;
+
+    for(int k = 0; k < 50; k++){
+        past_x = x;  // Save BEFORE updating any variables
+        
+        // New x - One full Gauss-Seidel iteration
+        for(int i = 0; i < size; i++){
+            float sum = 0.0f;
+            for(int j = 0; j < size; j++){
+                if(!(j == i)){
+                    sum += A.get(i, j) * x.data.at(j) * -1; 
+                }
+            }
+            sum += A.get(i, A.N - 1);
+            sum /= A.get(i, i);
+
+            x.data.at(i) = w * sum + (1.0f - w) * x.data.at(i);
+        }       
+
+        // Check convergence AFTER full iteration
+        if((x - past_x).magnitude() < thresh){
+            cout << "converged\n";
+            break;
+        }
+
+        // ........... Iterative refinement .....................
+        Matrix B = A.copy();
+        B.resize(B.M, B.N - 1);
+
+        Matrix b = B * x; 
+        Matrix r = A.get_column(A.N - 1) - b; 
+
+        // A(dx) = r
+        B.add_column(r.data);
+
+        B.rref();
+        B.print(25);
+        cout << "\n";
+        Matrix dx = B.get_column(B.N - 1);
+        x = x + dx;
+
+        // ........................................................
+
+        x.print(2);
+        cout << "\n";
+    }
+
+    return x;
+}

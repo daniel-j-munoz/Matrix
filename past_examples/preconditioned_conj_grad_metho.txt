@@ -1,0 +1,62 @@
+// apparently this sort of approximates the matrix A i think? 
+// essentially making it more likley to converge or faster convg. something like that....
+// sort of makes the matrix a little more idealised but at the cost of approximation i think?
+// ... think of the moon. which might not be perfectly spherical. but you could approximate it as spherical. 
+// making it more of a simpler/idealised problem something like that.
+
+
+// implement this later?.......
+
+// Additional REsources
+https://www.youtube.com/watch?v=h4cG8jLGmKg&t=282s
+https://en.wikipedia.org/wiki/Conjugate_gradient_method
+https://www.youtube.com/watch?v=zjzOYL4fhrQ
+
+// additional changes by claude
+Matrix Solve::preconditioned_conjugate_gradient(Matrix A, Matrix x, Matrix M){
+    float e = 1e-6;
+    Matrix b = A.get_column(A.N - 1);
+    A.resize(A.M, A.N - 1);
+
+    // Residual
+    Matrix pred = A * x; 
+    Matrix r = b - pred;
+    
+    // z = M^(-1) * r  (apply preconditioner)
+    Matrix z = M.solve(r);  // or M_inverse * r
+    
+    // P
+    Matrix p = z;  // Initialize with preconditioned residual
+    
+    Matrix past_z(0, 0);
+    Matrix past_r(0, 0);
+
+    for(int i = 0; i < 100; i++){
+        // Update x (same alpha formula)
+        float alpha = r.dot(z) / (p.T() * A * p).get(0, 0);  // r^T * z instead of r^T * r
+        Matrix v = p.copy();
+        v.scale(alpha);
+        x = x + v; 
+
+        // Update residual 
+        pred = A * x; 
+        past_r = r;
+        past_z = z;
+        r = b - pred;
+
+        if(r.magnitude() < e){
+            cout << "converged\n";
+            break;
+        } else {
+            // Apply preconditioner to new residual
+            z = M.solve(r);  // z = M^(-1) * r
+            
+            // Update P
+            float beta = r.dot(z) / past_r.dot(past_z);  // r^T * z instead of r^T * r
+            p.scale(beta); 
+            p = p + z;  // Add z instead of r
+        }
+    }
+
+    return x;
+}

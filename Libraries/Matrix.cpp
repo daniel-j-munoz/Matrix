@@ -5,6 +5,7 @@
 #include <string>
 
 
+
 // ............. Constructors .....................................
 Matrix::Matrix(int M, int N, vector<float>& values){
     this->data = {};
@@ -80,41 +81,6 @@ Matrix Matrix::operator*=(Matrix& other){
     return *this;
 }
 
-
-
-void Matrix::rref(){
-    // for each column 
-    for(int n = 0; n < N; n++){
-
-        // Non Zero Element
-        int non_zero = n; 
-        for(int m = 0; m < M; m++){
-            if(!(get(m, n) == 0.0f)){
-                non_zero = m; 
-                break; 
-            }
-        } 
-
-        // Swap & Scale
-        swap_row(n, non_zero); 
-        scale_row(non_zero, 1.0f / get(non_zero, n));
-
-        // Remove other Non Zero Elements
-        for(int m = 0; m < M; m++){
-            if(!(m == non_zero)){
-                float element = get(m, n); 
-                for(int ith = 0; ith < N; ith++){
-                    set(
-                        m, ith, 
-                        get(m, ith) - element * get(non_zero, ith)
-                    );
-                }
-            }
-        }
-    }
-}
-
-
 float Matrix::determinant(){
     if(N == 1){
         return data[0];
@@ -130,7 +96,7 @@ float Matrix::determinant(){
     return sum;
 }
 
-// void Matrix::transpose(){
+// void Matrix::T(){
 //     vector<float> temp(M * N, 0);
 //     for(int m = 0; m < M; m++){
 //         for(int n = 0; n < N; n++){
@@ -149,7 +115,9 @@ float Matrix::determinant(){
 // and i dont' even know why this version works. what in the world?
 // i think it was just that i should have used M instead of N for temp index. 
 // but it works now i think
-void Matrix::transpose() {
+
+
+Matrix Matrix::T() {
     vector<float> temp(M * N, 0);
     for (int m = 0; m < M; m++) {
         for (int n = 0; n < N; n++) {
@@ -157,11 +125,7 @@ void Matrix::transpose() {
         }
     }
 
-    data = temp;
-    // Swap dimensions
-    int temp_dim = M;
-    M = N;
-    N = temp_dim;
+    return Matrix(N, M, data);
 }
 
 
@@ -315,27 +279,6 @@ void Matrix::convolve_me(Matrix& kernel, bool flip) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  // what if you just return a vector of both? a vector w/ mask, shrinked and non shrinked.
     // or what if you can type it w/ string e.g. "Mask, Shrink" 
     // and it returns a mask and shrink in that order in a vector
@@ -447,8 +390,7 @@ void Matrix::convolve_seperable(Matrix& A){
     // Matrix vert(size, 1, 0.0f);
 
 
-    // Matrix A_T = A.copy(); 
-    // A_T.transpose(); 
+    // Matrix A_T = A.T();
     // A.product(A_T);
 
 
@@ -632,106 +574,61 @@ void Matrix::FFT2D(){
     }
 }
 
+// i recall there only being n - 2 transformation from somewhere...
 
-// Factorization ..................................................................................................................................................................
+// Does this require the matrix to be squared?....
 
-// input is square matrix here... 
-// any real square matrix can be decomposed into qr. 
-// methods for non square?...
-vector<Matrix> Matrix::QR(){
-    vector<Matrix> U = {};
-
-    // Gram Schimdt Process
-    for(int k = 0; k < N; k++){
-        Matrix a = get_column(k);
-        Matrix sum(M, 1, 0.0f);
-        for(int j = 0; j < k; j++){
-            Matrix projection = a.project(U.at(j));
-            sum += projection;
-        }
-        U.push_back(a - sum);
-    }
-
-    Matrix Q(M, 0);  
-    for(Matrix column : U){
-        column.unit_mag();
-        Q.add_column(column.data);
-    }
-
-    Matrix R(M, N, 0);
-    for(int i = 0; i < N; i++){
-        Matrix a = get_column(i);
-        for(int j = 0; j <= i; j++){
-            Matrix e = Q.get_column(j);
-            R.set(j, i, a.dot(e));
-        }
-    }
-
-    return {Q, R};
-}
-
+// i believe the matrix must be n x n. but im not sure...
 /**
- * QR via House Holder
+ * Returns as upper Hessenberg matrix
+ * If symmetric, returns as tridiagonal matrix 
+ * in both cases, the returned matrix retains eigenvalues/eigenvectors 
+ * aka the matrix is similar.
+ * 
+ * there might be some exceptions that i am possibly unaware of.
+ * i am not sure...
+ * 
+ * can be used as a good intial starting point for QR algorithms
  */
+Matrix Matrix::upper_hessenberg(){
+    Matrix A = *this;
 
- // measure perforamnce differnce for differnt methods and way fo doing things?...
+    for(int k = 0; k < N - 2; k++){ 
+        Matrix x = A.get_column(k); 
 
- //  maybe don't copmute all house holders?... dpends on the speicifc case?.....
- // might be useful for better computation?... who knows...
-
- // i think this might work for any type of matrix?.... not just square matrix?...
-// can QRHH be better written more efficent?...
-// QR aitken method?.... 
-// accerlating convergece in someway?....
-
-vector<Matrix> Matrix::QRHH(){
-    Matrix Q(M, M); // Identity Matrix
-    Matrix R = *this; // A
-    vector<Matrix> HH = {}; // Householders
-
-    for(int k = 0; k < N; k++){
-        // Get Column Vector
-        Matrix x = R.get_column(k);
-
-        // Zero 
-        for(int i = 0; i < k; i++){
+        // Zeros
+        for(int i = 0; i <= k; i++){
             x.set(i, 0, 0.0f);
         }
 
-        // Basis Vector
-        Matrix vec(M, 1, 0.0f); 
-        vec.set(k, 0, 1.0f);
+        // Standard Basis & Get Vector 
+        float sign = (x.get(k + 1, 0) >= 0) ? 1.0f : -1.0f; /// NEW STEP HERE
+        Matrix b(M, 1, 0.0f);
+        b.set(k + 1, 0, sign * x.magnitude());
+        x = x - b;
 
-        // V
-        float sign = (x.get(k, 0) >= 0) ? 1.0f : -1.0f; /// NEW STEP HERE
-        vec.scale(sign * x.magnitude()); // ADDED SIGN *
-        x = x - vec; 
-
-        if(x.magnitude() > 1e-6){ // Avoid Division By Zero
+        if(x.magnitude() > 1e-6){
             x.unit_mag();
 
-            // Householder Matrix
-            Matrix I(M, M);
-            // H = I - 2(x*xt)
-            Matrix xt = x.copy();
-            xt.transpose();
-            vec = x * xt;
-            vec.scale(2);
-            Matrix H = I - vec;
-            HH.push_back(H);
+            // H
+            Matrix I(M, M); 
+            Matrix xt = x.T();
+            Matrix xxt = x * xt;
+            xxt.scale(2.0f);
+            Matrix H = I - xxt;
 
-            // QR
-            Q = Q * H;
-            R = H * R;
-
-            cout << k << "\n";
+            // HAHT 
+            Matrix HT = H.T();
+            A = H * A * HT; 
         } else {
             break;
         }
+        
     }
 
-    return {Q, R};
+    return A;
 }
+
 
 // ............. 1D ...........................................................................................
 
@@ -1543,6 +1440,8 @@ void Matrix::print(int x) {
         cout << "\n";
     }
     cout << defaultfloat; 
+
+    // add a cout << "\n" here for conveince?....
 }
 
 

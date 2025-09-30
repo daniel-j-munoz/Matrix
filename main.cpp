@@ -6,50 +6,44 @@
 using namespace std;
 using namespace cv;
 
+
+// call packages insead?....
+
 #include "Libraries/Eigen.h"
-
-// Numerical Class here?....
-
-// aitkens?...
+#include "Libraries/Solve.h"
 
 int main(){
 
+    // vector<float> data = {
+    //     5, -1, 2, 12, 
+    //     3, 8, -2, -25, 
+    //     1, 1, 4, 6
+    // };
+    // Matrix A(3, 4, data);
 
     vector<float> data = {
-        1.0f, 3.0f, 3.0f,
-        3.0f, 5.0f, 7.0f,
-        3.0f, 7.0f, 6.0f
+        10, -6, 0, 12,
+        -6, 8, -2, 0, 
+        0, -2, 5, 0
     };
 
-    Matrix A(3, 3, data);
+    Matrix A(3, 4, data);
+
+
+    data = {0, 0, 0};
+    Matrix x(3, 1, data);
+
+    // x = Solve::gauss_seidel(A, x, 1.0f);
+    // x.print(2);
+
+
+    x = Solve::conjugate_gradient(A, x);
+    x.print(10);
 
 
 
 
-    
-    // Matrix eigen = Eigen::QR(A);
 
 
-    // Matrix b(3, 1);
-    // b.randomize(-10.0f, 10.0f);
-    // Matrix eigenvector = Eigen::power(A, b);
-    // eigenvector.print(2);
-
-
-
-    vector<Matrix> QR = A.QRHH(); 
-    QR.at(0).print(2);
-    cout << "\n";
-    QR.at(1).print(2);
-
-
-    cout << "\n";
-    (QR.at(0) * QR.at(1)).print(2);
-
-
-    return 0;
 }
 
-
-
-// Min(m - 1, n) iterations? hhoulder method?...
