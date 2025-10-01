@@ -3,6 +3,8 @@
 // this is guass seidel right?... not jacobi right?....
 // better stopping criteria?...
 
+#include "Factor.h"
+
 /**
  * @param x Intial Guess
  * @param w Relaxation Factor Omega (1.0f -> Guass Seidel)
@@ -129,6 +131,9 @@ Matrix Solve::conjugate_gradient(Matrix A, Matrix x){
 
 // Direct Methods.........
 
+// another rref where we find uppper or lower triangular then back or foward subistion? 
+// guass elm w/ back or forward subsition?...
+
 // RREF Isnt working for some reason. find why out why this is the case...
 Matrix Solve::rref(Matrix A){
 
@@ -180,8 +185,39 @@ Matrix Solve::rref(Matrix A){
 
 
 
+// Uses the idea of back and foward subsittuion w/ triangular matricies. 
 
+Matrix Solve::LU(Matrix A){
+    Matrix b = A.get_column(A.N - 1);
+    A.resize(A.M, A.N - 1);
 
+    vector<Matrix> LU = Factor::LU(A);
+    Matrix L = LU.at(0);
+    Matrix U = LU.at(1);
+    
+    // Ly = b Foward Substitution
+    vector<float> y = {};
+    for(int j = 0; j < L.M; j++){
+        float yj = b.get(j, 0);
+        for(int i = 0; i < j; i++){
+            yj -= L.get(j, i) * y.at(i);
+        }
+        y.push_back(yj);
+    }
+
+    // Ux = y Back Substitution 
+    vector<float> x(A.M);
+    for(int j = U.M - 1; j >= 0; j--){
+        float xj = y.at(j); 
+        for(int i = j + 1; i < A.M; i++){
+            xj -= U.get(j, i) * x.at(i);
+        }
+        xj /= U.get(j, j);
+        x[j] = xj;
+    }
+
+    return Matrix(A.M, 1, x);
+}
 
 
 

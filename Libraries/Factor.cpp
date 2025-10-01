@@ -97,3 +97,52 @@ vector<Matrix> Factor::QRHH(Matrix A){
     return {Q, R};
 }
 
+
+
+// A must be square matirx?....
+vector<Matrix> Factor::LU(Matrix A){
+    Matrix L(A.M, A.N);
+
+    for(int i = 0; i < A.N; i++){
+        for(int j = i + 1; j < A.M; j++){
+            float s = A.get(j, i) / A.get(i, i);  
+            L.set(j, i, s); 
+            A.row_plus(j, -s, i); // rowj -= s * rowi
+        }
+    }
+
+    return {L, A};
+}
+
+
+// must be square matrix?....
+
+// gpt implementation
+vector<Matrix> Factor::cholesky(Matrix A){
+    Matrix L(A.M, A.N, 0.0f);
+
+    for(int i = 0; i < A.N; i++){
+        for(int j = 0; j <= i; j++){
+            // Diagonal elements
+            if(i == j){
+                float value = A.get(i, i); 
+                for(int k = 0; k < j; k++){
+                    value -= L.get(i, k) * L.get(i, k);
+                }
+                value = sqrt(value);
+                L.set(i, j, value);
+            } 
+            // Off-diagonal elements
+            else {
+                float value = A.get(i, j); 
+                for(int k = 0; k < j; k++){
+                    value -= L.get(i, k) * L.get(j, k);
+                }
+                value /= L.get(j, j);
+                L.set(i, j, value);
+            }
+        }
+    }   
+
+    return {L, L.T()};
+}

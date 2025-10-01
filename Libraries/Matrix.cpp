@@ -125,7 +125,7 @@ Matrix Matrix::T() {
         }
     }
 
-    return Matrix(N, M, data);
+    return Matrix(N, M, temp);
 }
 
 
@@ -942,6 +942,16 @@ void Matrix::scale_row(int m, int scale){
     }
 }
 
+void Matrix::row_minus(int m, Matrix row){
+
+}
+
+void Matrix::row_plus(int a, float scale, int b){
+    for(int i = 0; i < N; i++){
+        set(a, i, get(a, i) + scale * get(b, i));
+    }
+}
+
 void Matrix::to_row_vector(){
     N = M * N;
     M = 1; 
@@ -1440,6 +1450,8 @@ void Matrix::print(int x) {
         cout << "\n";
     }
     cout << defaultfloat; 
+
+    cout << "\n";
 
     // add a cout << "\n" here for conveince?....
 }

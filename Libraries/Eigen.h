@@ -7,7 +7,7 @@ class Eigen {
 
 
     public: 
-        Eigen();
+
 
 
         static Matrix QR(Matrix A);

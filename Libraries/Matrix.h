@@ -84,6 +84,13 @@ class Matrix {
         void add_row(vector<float>& values);
         void swap_row(int a, int b);
         void scale_row(int m, int scale);
+        void row_minus(int m, Matrix row);  // or get row, do operations then set row?.... im not sure... tbh.... really not sure..... hmmm.....
+
+        /**
+         * e.g. row_a + scale * row_b
+         */
+        void row_plus(int a, float scale, int b); // this is a common operation... especially seen w/ row operations and stuff... so maybe keepp idk??.....
+        // add elementary row operation methods?.............???
 
         Matrix get_column(int index); 
         void add_column(vector<float>& values);
