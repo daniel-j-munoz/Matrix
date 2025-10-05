@@ -100,6 +100,8 @@ vector<Matrix> Factor::QRHH(Matrix A){
 
 
 // A must be square matirx?....
+// i belive you can do non square matricies. 
+// perhaps u might need to edit this or something idk...
 vector<Matrix> Factor::LU(Matrix A){
     Matrix L(A.M, A.N);
 
@@ -116,7 +118,8 @@ vector<Matrix> Factor::LU(Matrix A){
 
 
 // must be square matrix?....
-
+// must be symmetric matrix?....
+// symmetric requires being square?...
 // gpt implementation
 vector<Matrix> Factor::cholesky(Matrix A){
     Matrix L(A.M, A.N, 0.0f);

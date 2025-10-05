@@ -12,24 +12,46 @@ using namespace cv;
 #include "Libraries/Eigen.h"
 #include "Libraries/Solve.h"
 #include "Libraries/Factor.h"
+#include "Libraries/Interpolate.h"
+#include "Libraries/Peice.h"
+#include "Libraries/Graph.h"
+
+
+
+
+#include <chrono>  // for timing
+#include <iomanip> // for formatting output
+using namespace chrono;
+
 
 
 int main(){
 
+
     vector<float> data = {
-        4, 12, -16, 
-        12, 37, -43, 
-        -16, -43, 98
+        -3, 6, 
+        -2, 12, 
+        -1, 0, 
+        0, 3, 
+        1, 4, 
+        2, 2, 
+        3, 9
     };
 
-   Matrix A(3, 3, data);
-
-   vector<Matrix> LLT = Factor::cholesky(A);
-
-   LLT.at(0).print(2);
-   LLT.at(1).print(2);
+    Matrix nodes(7, 2, data);
 
 
+    Peice spline = Interpolate::natural_spline(nodes);
+
+    Graph graph(1000, 1000);
+    // graph.graph(nodes); 
+    graph.graph(spline.sample(-3, 3, 0.25f));
+    graph.show(); 
+  
+
+    
+
+    return 0;
 
 }
 
@@ -42,42 +64,6 @@ int main(){
 
 
 
-
-
-//  vector<float> data = {
-//         5, 2, 1, 4, 5, 
-//         3, 5, 2, 8, 2, 
-//         1, 2, 3, 2, 4, 
-//         5, 2, 3, 2, 5, 
-//         2, 3, 5, 2, 1,
-//     };
-//     Matrix A(5, 5, data);
-
-
-//     Matrix AT = A.T();
-//     A = A * AT;
-
-//     A = A.upper_hessenberg();
-//     A.print(2);
-
-//     // vector<float> data = {
-//     //     10, -6, 0, 12,
-//     //     -6, 8, -2, 0, 
-//     //     0, -2, 5, 0
-//     // };
-
-//     // Matrix A(3, 4, data);
-
-
-//     // data = {0, 0, 0};
-//     // Matrix x(3, 1, data);
-
-//     // x = Solve::gauss_seidel(A, x, 1.0f);
-//     // x.print(2);
-
-
-//     // x = Solve::conjugate_gradient(A, x);
-//     // x.print(10);
 
 
 //     // call upperhessenberg on symmetric.

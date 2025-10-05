@@ -10,6 +10,10 @@ using namespace cv;
  * e.g. matrix can use vector section methods. and your col/row vectors can use vector secontion methods as well
  */
 
+ // permutation matrix? 
+ // randomize symmetric matrix?.... etc....  and other stuf.....
+ // can randomize symmetric pos def square by randomize regular matrix then multiply w/ it's transpose.....
+
 #pragma once
 class Matrix {
     public: 
@@ -93,7 +97,11 @@ class Matrix {
         // add elementary row operation methods?.............???
 
         Matrix get_column(int index); 
+
+        // add an overload that can also take in a matrix as well......???....
+        // that would be useuful....
         void add_column(vector<float>& values);
+        void add_column(Matrix column);
         
         /**
          * Region of Interest
@@ -147,6 +155,7 @@ class Matrix {
 
         /** inclusive bounds */ 
         void range(float a, float b); 
+        void range(float a, float b, float c, float d); // this one transforms data assuming going from one interval to another interval. all inclusive. 
 
         void step_change(float step);
 

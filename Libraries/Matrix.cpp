@@ -928,6 +928,13 @@ void Matrix::add_column(vector<float>& values){
     data = new_data;
 }
 
+void Matrix::add_column(Matrix column){
+    add_column(column.data);
+    // doesn't have to adhere to being column vector
+    // maybe its fine to input any matrix. just let it input the data of that matrix?...
+    // idk... interseting.....
+}
+
 void Matrix::swap_row(int a, int b){
     for(int n = 0; n < N; n++){
         float past = get(b, n); 
@@ -1023,6 +1030,18 @@ void Matrix::range(float a, float b){
     }    
 }
 
+void Matrix::range(float a, float b, float c, float d){
+    if (b == a) {
+        return;
+    } else {
+        float factor = (d - c) / (b - a); 
+        vector<float> new_data; 
+        for(int ith = 0; ith < data.size(); ith++){
+            data[ith] = factor * (data[ith] - a) + c;
+        }
+    }    
+}
+
 void Matrix::randomize(float a, float b){
     random_device rd;
     mt19937 gen(rd());
@@ -1033,6 +1052,8 @@ void Matrix::randomize(float a, float b){
 }
 
 // ensure it handles shrinking and expanding correctly. 
+
+// make another resize method that just updates M & N only?.....
 void Matrix::resize(int m, int n) {
         // vector<float> new_data(m * n, 0);
 

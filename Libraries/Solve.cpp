@@ -192,31 +192,79 @@ Matrix Solve::LU(Matrix A){
     A.resize(A.M, A.N - 1);
 
     vector<Matrix> LU = Factor::LU(A);
-    Matrix L = LU.at(0);
-    Matrix U = LU.at(1);
     
     // Ly = b Foward Substitution
-    vector<float> y = {};
-    for(int j = 0; j < L.M; j++){
-        float yj = b.get(j, 0);
-        for(int i = 0; i < j; i++){
-            yj -= L.get(j, i) * y.at(i);
-        }
-        y.push_back(yj);
-    }
+    Matrix one = LU.at(0);
+    one.add_column(b);
+    Matrix y = foward(one);
 
     // Ux = y Back Substitution 
-    vector<float> x(A.M);
-    for(int j = U.M - 1; j >= 0; j--){
-        float xj = y.at(j); 
-        for(int i = j + 1; i < A.M; i++){
-            xj -= U.get(j, i) * x.at(i);
+    Matrix two = LU.at(1);
+    two.add_column(y);
+    return backward(two);
+}
+
+// requires that the matrix be symmetric(thus square as well?) and positive definite?....
+Matrix Solve::cholesky(Matrix A){
+    Matrix b = A.get_column(A.N - 1);
+    A.resize(A.M, A.N - 1);
+
+    vector<Matrix> LLT = Factor::cholesky(A);
+
+    // Foward Sub Ly = b 
+    Matrix one = LLT.at(0);
+    one.add_column(b);
+    Matrix y = foward(one);
+
+    // Backward Sub LTx = y
+    Matrix two = LLT.at(1); 
+    two.add_column(y); 
+    return backward(two);
+}
+
+
+// maybe A and b form  might be usefull ?... 
+// instead of just augemented matrix.... im not sure tbh though....
+// OR PERHAPS EVEN... just accept both forms......?..... if agumented, just seperate and send to other method w/ A and b parameters?.....
+
+/**
+ * input lower triangular matrix
+ * 
+ * does it have to be lower triangular for foward sub?.... im pretty surre right?....
+ */
+Matrix Solve::foward(Matrix A){
+    Matrix b = A.get_column(A.N - 1);
+    A.resize(A.M, A.N - 1);
+
+    vector<float> x = {};
+    for(int j = 0; j < A.M; j++){
+        float xj = b.get(j, 0);
+        for(int i = 0; i < j; i++){
+            xj -= A.get(j, i) * x.at(i);
         }
-        xj /= U.get(j, j);
-        x[j] = xj;
+        xj /= A.get(j, j);  // ← MISSING THIS LINE! According to claude.... i think i forget this line?... idk double check and stuff......
+        x.push_back(xj);
     }
 
-    return Matrix(A.M, 1, x);
+    return Matrix(x.size(), 1, x);
+}
+
+
+// Ux = y
+Matrix Solve::backward(Matrix A){
+    Matrix b = A.get_column(A.N - 1);
+    A.resize(A.M, A.N - 1);
+
+    vector<float> x(A.M);
+    for(int j = A.M - 1; j >= 0; j--){
+        float xj = b.get(j, 0); 
+        for(int i = j + 1; i < A.M; i++){
+            xj -= A.get(j, i) * x.at(i);
+        }
+        xj /= A.get(j, j);
+        x[j] = xj;
+    }
+    return Matrix(x.size(), 1, x);
 }
 
 
@@ -228,18 +276,131 @@ Matrix Solve::LU(Matrix A){
 
 
 
+// subdiagonal and main diagonal arrays?....
+// interseting...
+
+
+
+// takes in tridiagonall system and sovles it... 
+// or do we just apply. lu and for /back sub? im not sure.... 
+
+Matrix Solve::thomas(Matrix A){
+    Matrix b = A.get_column(A.N - 1); 
+    A.resize(A.M, A.N - 1);
+
+
+    vector<float> E = {};
+    vector<float> F = {};
+    vector<float> R = {};
+
+
+    for(int k = 0; k < A.N; k++){
+
+        // L
+        float e; 
+        if(k - 1 < 0){
+            e = 0.0f;
+        } else {
+            e = A.get(k, k - 1) / F.at(k - 1); 
+        }
+
+        E.push_back(e);
+
+
+        // U
+        float f;
+        if(k - 1 < 0){
+            f = A.get(k, k);
+        } else {
+            f = A.get(k, k) - e * A.get(k - 1, k);
+        }
+        F.push_back(f);
+
+
+
+        // Forward Sub
+        float r; 
+        if(k - 1 < 0){
+            r = b.get(k, 0);
+        } else {
+            r = b.get(k, 0) - e * R.at(k - 1);
+        }
+        R.push_back(r);
+    }
+
+    // Backward Sub
+    vector<float> X(A.N);
+    for(int k = A.N - 1; k >= 0; k--){
+        float x; 
+        if(k + 1 >= A.N){
+            x =  R.at(k);
+            x /= F.at(k);
+        } else {
+            x =  R.at(k) - A.get(k, k + 1) * X.at(k + 1);
+            x /= F.at(k);
+        }
+
+        X[k] = x;
+    }
+
+    return Matrix(X.size(), 1, X);
+}
 
 
 
 
 
 
+// input genreal formulas into thomas thing?.... for cubic spline thing or no?...
 
+// Matrix Solve::thomas(vector<float> a, vector<float> b, vector<float> c, vector<float> d){
+//     int size = a.size(); 
 
+//     vector<float> x(size);
 
+//     for(int i = 1; i < size; i++){
+//         float w = a.at(i) / b.at(i - 1); 
+//         b[i + 1] = b.at(i) - w * c.at(i - 1); 
+//         d[i + 1] = d.at(i) - w * d.at(i - 1); 
+//     }
 
+//     x[size - 1] = (d.back() / b.back());
+//     for(int i = size - 2; i >= 0; i--){
+//         float value = d.at(i) - c.at(i) * x.at(i + 1);
+//         value /= b.at(i);
+//         x[i] = value;
+//     }
 
+//     return Matrix(size, 1, x);
+// }
 
+// Edits by claude.....
+Matrix Solve::thomas(vector<float> a, vector<float> b, vector<float> c, vector<float> d){
+    int size = b.size(); 
+
+    vector<float> x(size);
+    vector<float> b_prime(size);
+    vector<float> d_prime(size);
+
+    // Initialize first elements
+    b_prime[0] = b[0];
+    d_prime[0] = d[0];
+
+    // Forward sweep
+    for(int i = 1; i < size; i++){
+        float w = a[i] / b_prime[i - 1]; 
+        b_prime[i] = b[i] - w * c[i - 1]; 
+        d_prime[i] = d[i] - w * d_prime[i - 1]; 
+    }
+
+    // Back substitution
+    x[size - 1] = d_prime[size - 1] / b_prime[size - 1];
+    for(int i = size - 2; i >= 0; i--){
+        x[i] = (d_prime[i] - c[i] * x[i + 1]) / b_prime[i];
+    }
+
+    return Matrix(size, 1, x);
+}
 
 
 

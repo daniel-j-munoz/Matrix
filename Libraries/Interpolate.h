@@ -1,15 +1,12 @@
 #include "Matrix.h"
+#include "Peice.h"
 
 class Interpolate{
 
 
     public: 
-
-
-        static Matrix cubic_spline(Matrix data);
-
-        static Matrix natural_spline(Matrix x, Matrix y); 
-
-        // natural, clamped?
-        // just name spline instead? e.g. spline()?
+        static Peice natural_spline(Matrix nodes); 
+        static vector<vector<float>> create_spline_system(vector<float> x, vector<float> y, vector<float> H);
 };
+
+// ask calude/gpt if there is a more straightfoward algo?

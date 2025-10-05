@@ -156,7 +156,7 @@ void Eigen::save_gershgorin(Matrix A, string name){
 
     int WIDTH = 500; 
     int HEIGHT = 500; 
-    Mat image = Mat::zeros(WIDTH, HEIGHT, CV_8UC3);
+    Mat image = Mat::zeros(HEIGHT, WIDTH, CV_8UC3); // i switched width wnd height
 
     Matrix centers(A.M, 1);
     vector<float> radii = {};
