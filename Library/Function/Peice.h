@@ -1,6 +1,6 @@
 
 #include "Function.h"
-#include "Matrix.h"
+#include "../Matrix/Matrix.h"
 
 #pragma once
 class Peice {
@@ -16,7 +16,8 @@ class Peice {
         void append(vector<float> coefficents, float center, float a, float b);
 
         Matrix sample(float left, float right, float delta); 
-        Matrix graph();
+
+        float integrate(float a, float b);
 };
 
 

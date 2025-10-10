@@ -1,55 +1,65 @@
 #include <opencv2/opencv.hpp>
-#include "Libraries/Image.h"
-#include "Libraries/Matrix.h"
 #include <iostream>
-
 using namespace std;
 using namespace cv;
 
 
 // call packages insead?....
-
-#include "Libraries/Eigen.h"
-#include "Libraries/Solve.h"
-#include "Libraries/Factor.h"
-#include "Libraries/Interpolate.h"
-#include "Libraries/Peice.h"
-#include "Libraries/Graph.h"
-
-
-
-
-#include <chrono>  // for timing
-#include <iomanip> // for formatting output
-using namespace chrono;
+#include "Library/Matrix/Matrix.h"
+#include "Library/Matrix/Eigen.h"
+#include "Library/Matrix/Solve.h"
+#include "Library/Matrix/Factor.h"
+#include "Library/Function/Peice.h"
+#include "Library/Function/Interpolate.h"
+#include "Library/Function/Graph.h"
+#include "Library/Function/Fit.h"
 
 
 
 int main(){
 
 
-    vector<float> data = {
-        -3, 6, 
-        -2, 12, 
-        -1, 0, 
-        0, 3, 
-        1, 4, 
-        2, 2, 
-        3, 9
-    };
-
-    Matrix nodes(7, 2, data);
 
 
-    Peice spline = Interpolate::natural_spline(nodes);
+
+    Matrix data(
+        12, 2, 
+        {
+            -5, 1,
+            -4, 2, 
+            -3, 3, 
+            -2, 4, 
+            -1, 5,
+            0, 4,
+            1, 3,
+            2, 2, 
+            3, 1, 
+            4, -2, 
+            5, -3,
+            6, -4
+        }
+    );
+
+    Matrix dsd(
+        3, 2, 
+        {
+            -5, -1,
+            0, -3,
+            5, 4
+        }
+    );
+
+
+    Peice l = Interpolate::peice_wise_lagrange(data, 2);
+
+   
+
 
     Graph graph(1000, 1000);
-    // graph.graph(nodes); 
-    graph.graph(spline.sample(-3, 3, 0.25f));
-    graph.show(); 
-  
+    graph.graph(data);
+    graph.graph(l.sample(-5, 6, 0.5f));
+    graph.show();
 
-    
 
     return 0;
 
@@ -75,3 +85,7 @@ int main(){
 //     (LU.at(0) * LU.at(1)).print(2);
 
 
+
+
+
+// downsampling? vec or mat?

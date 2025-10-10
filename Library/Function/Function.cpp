@@ -22,6 +22,66 @@ float Function::at(float input){
     // return synth_rem(input);
 }
 
+
+Matrix Function::sample(float left, float right, float delta){
+    int size = (right - left) / delta;
+    Matrix output(size, 2, 0.0f);
+    int index = 0;
+    for(float i = left; i <= right; i += delta){
+        output.set(index, 0, i);
+        output.set(index, 1, at(i));
+        index++;
+    }
+    return output;
+}
+
+
+Function Function::operator*(Function f){
+    vector<float> data(values.size() + f.values.size() - 1, 0.0f);
+    for(int i = 0; i < values.size(); i++){
+        for(int j = 0; j < f.values.size(); j++){
+            data[i + j] += values.at(i) * f.values.at(j);
+        }
+    }
+    return Function(data, 0.0f);
+}
+
+Function Function::operator*(float scale){
+    Function f = *this;
+    for(int i = 0; i < f.values.size(); i++){
+        f.values[i] *= scale;
+    }
+    return f;
+}
+
+Function Function::operator+(Function f){
+    vector<float> data(max(values.size(), f.values.size()), 0.0f);
+    for(int i = 0; i < values.size(); i++){
+        data[i] += values[i];
+    }
+
+    for(int i = 0; i < f.values.size(); i++){
+        data[i] += f.values[i];
+    }
+
+    return Function(data, 0.0f);
+}
+
+float Function::integrate(float a, float b){
+    Function f = *this;
+    f.values.push_back(0.0f);
+    for(int i = f.values.size() - 1; i > 0; i--){
+        f.values[i] = f.values[i - 1] / i;
+    }
+    return f.at(b) - f.at(a);
+}
+
+// general integral return?....
+
+
+
+
+
 // float Function::synth_rem(float value){
 //     float top;
 //     float bot = 0.0f;

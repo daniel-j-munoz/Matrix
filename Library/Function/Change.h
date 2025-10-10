@@ -1,0 +1,10 @@
+// numerical derivatives and finite differences and stuff for matrix w/ x and y?.... 
+// returns differences and stuff...
+
+// maybe put this in fucntion?
+
+
+class Change{
+    
+    
+};

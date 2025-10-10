@@ -26,10 +26,6 @@ And perhaps we could also tag these matricies manually even. Who knows...
 // .................................................................................
 
 
-
-
-
-
 // like i said before....
 // keep numbers as fractions and symbols and stuff...
 // dont immediatley turn into floating point to perhaps prevent information loss
@@ -160,6 +156,9 @@ partial pvitiong. when choosing the pivot. you choose the one w/ the largest abs
 
 
 
+// permutation matrix? 
+ // randomize symmetric matrix?.... etc....  and other stuf.....
+ // can randomize symmetric pos def square by randomize regular matrix then multiply w/ it's transpose.....
 
 
 
@@ -195,3 +194,55 @@ partial pvitiong. when choosing the pivot. you choose the one w/ the largest abs
 
 // taylor seires and stuff. cos can be polynomial as taylor?.... 
 // certain n many terms?... allows you to mix w/ other polynomials and stuff??... intersting....
+
+
+
+
+// add ml in the libraries?... idk hm... intereseting....
+or add it somehwere else idk... hm....
+
+
+// inverse w/ adj/ det?... 
+
+
+
+
+
+
+// iterative refifement just improves the guesses each iteration?...
+
+
+
+
+
+
+// so imagine the matrix having tags. and being able to choice better omegas, given what type of matrix we have and stuff...
+// just writing what comes to head...
+
+// and so what if omega could perhaps be viewed as something like a learnable parameter. 
+// what if we get multiple matricies. Input their elements into a MLP Model and predict an omega. 
+// That way, we could make a prediction of an omega given our current matrix...
+
+// is mlp model a hgiher dimensional form of regression or something?..... or maybe not?....
+// higher dimensional regression?... in general?... given input and output. 
+// Make prediction of general function that could approximate the thing?... interesting...
+
+
+
+
+
+// guasssiedel might be used for large matricies instead of rref for computation?...who knows.... 
+// what might be the benefit of numerical vs direct meethod here... idk but pretty iknteresting... just writing what comes to head...
+
+
+
+
+roi but instead of getting we set? 
+// so like set a block matrix? or something of that nature?...
+
+
+
+
+
+// move root finding here into here?... 
+// for function?.. for matrix?... idk?....

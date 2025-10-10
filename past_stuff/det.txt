@@ -1,0 +1,35 @@
+float Matrix::determinant(){
+    if(N == 1){
+        return data[0];
+    }
+
+    float sum = 0.0f; 
+    int A = 1; 
+    for(int n = 0; n < N; n++){
+        Matrix subspace = *ROI(1, n + 1, M, n - 1);
+        sum += A * get(0, n) * subspace.determinant(); 
+        A *= -1; 
+    }
+    return sum;
+}
+
+
+// A must be square matirx?....
+// i belive you can do non square matricies. 
+// perhaps u might need to edit this or something idk...
+vector<Matrix> Factor::LU(Matrix A){
+    Matrix L(A.M, A.N);
+
+    for(int i = 0; i < A.N; i++){
+        for(int j = i + 1; j < A.M; j++){
+            float s = A.get(j, i) / A.get(i, i);  
+            L.set(j, i, s); 
+            Guass::row_plus(j, -s, i, &A); // rowj -= s * rowi
+        }
+    }
+
+    return {L, A};
+}
+
+
+// inversion via cofactor and stuff??

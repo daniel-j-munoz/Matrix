@@ -8,7 +8,9 @@
             "args": [
                 "-g",
                 "*.cpp",
-                "Libraries/*.cpp",
+                "Library/*.cpp",
+                "Library/Matrix/*.cpp",
+                "Library/Function/*.cpp",
                 "-std=c++23",
                 "-o",
                 "app",

@@ -23,6 +23,9 @@
         "set": "cpp",
         "stack": "cpp",
         "unordered_set": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "__bit_reference": "cpp",
+        "forward_list": "cpp",
+        "tuple": "cpp"
     }
 }

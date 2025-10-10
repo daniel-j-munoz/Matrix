@@ -1,5 +1,5 @@
 
-#include "Matrix.h"
+#include "../Matrix/Matrix.h"
 #include <iostream>
 
 class Graph {

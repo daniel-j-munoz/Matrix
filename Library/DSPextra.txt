@@ -1,0 +1,67 @@
+
+// void Matrix::convolve_valid(Matrix& kernel, bool flip){
+//     int F = flip ? -1 : 1;
+//     int half = kernel.M / 2;
+//     vector<float> temp(M * N, 0);
+//     for(int m = 0; m < M; m++){
+//         for(int n = 0; n < N; n++){
+//             float sum = 0.0f;
+//             for(int k = -half; k <= half; k++){
+//                 for(int h = -half; h <= half; h++){
+//                     int x = n + h; 
+//                     int y = m + k;
+//                     if(
+//                         y >= 0 && y < M && 
+//                         x >= 0 && x < N
+//                     ){
+//                         sum += get(y, x) * kernel.get(half - F * k, half - F * h);
+//                     }
+//                 }
+//             }
+//             temp[N * m + n] = sum;
+//         }
+//     }
+//     data = temp;
+// }
+
+
+
+
+
+
+// void Matrix::FFT2D(){
+
+//     Matrix real_matrix(0, N, 0);
+//     Matrix imaginary_matrix(0, N, 0);
+
+//     Matrix* real_spectrum = new Matrix(M, 0, 0);
+//     Matrix* imag_spectrum = new Matrix(M, 0, 0);
+
+//     // FFT Rows 
+//     for(int m = 0; m < M; m++){ 
+//         vector<complex<float>> fft = FFT_row(m);
+//         vector<float> reals = get_reals(fft);
+//         vector<float> imaginaries = get_imaginaries(fft);
+//         real_matrix.add_row(reals);
+//         imaginary_matrix.add_row(imaginaries);
+//     }
+
+//     for(int n = 0; n < N; n++){
+//         vector<float> reals = real_matrix.get_column(n).data;
+//         vector<float> imaginaries = imaginary_matrix.get_column(n).data;
+//         vector<complex<float>> column = merge_real_and_imag(reals, imaginaries); 
+//         FFT(column); 
+//         reals = get_reals(column); 
+//         imaginaries = get_imaginaries(column); 
+//         real_spectrum->add_column(reals);  
+//         imag_spectrum->add_column(imaginaries);
+//     }
+
+//     this->real_spectrum = real_spectrum;
+//     this->imag_spectrum = imag_spectrum;
+
+
+// }
+
+// is convoution fliping the signal right?
+

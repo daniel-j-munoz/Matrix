@@ -1,5 +1,7 @@
 #include "Eigen.h"
 #include "Factor.h"
+#include "Data.h"
+
 
 
 Matrix gershgorin_radii(Matrix A){
@@ -45,7 +47,7 @@ Matrix Eigen::QR(Matrix A){
         past_A = A;
         A = R * Q;
 
-        if(gershgorin_radii(A).max() < thresh){
+        if(Data::max(gershgorin_radii(A))[0] < thresh){
             cout << "converged\n";
             break;
         }
@@ -75,7 +77,7 @@ Matrix Eigen::power(Matrix A, Matrix b){
 
     float tol = 1e-6; // e.g. [0.999999, 1.000001]
     Matrix past_b = b;
-    b.unit_mag();
+    Data::unit_L2(&b);
     b.print(2);
     cout << "\n";
 
@@ -89,7 +91,7 @@ Matrix Eigen::power(Matrix A, Matrix b){
 
         // Eigen Vector
         b = A * b;
-        b.unit_mag();
+        Data::unit_L2(&b);
         b.print(2);
         cout << "\n";
 
@@ -177,9 +179,10 @@ void Eigen::save_gershgorin(Matrix A, string name){
         radii.push_back(sum);
     }
 
-    centers.range(
+    Data::range( 
         0 + radii.at(0), 
-        WIDTH - radii.at(radii.size() - 1)
+        WIDTH - radii.at(radii.size() - 1), 
+        &A
     );
 
     // Real Axis

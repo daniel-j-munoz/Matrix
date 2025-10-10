@@ -1,5 +1,7 @@
 
 #include "Factor.h"
+#include "Data.h"
+#include "Guass.h"
 
 // Accepts Non Square Matricies as Well 
 // QR via Gram Schimdt Process
@@ -19,7 +21,7 @@ vector<Matrix> Factor::QR(Matrix A){
 
     Matrix Q(A.M, 0);  
     for(Matrix column : U){
-        column.unit_mag();
+        Data::unit_L2(&column);
         Q.add_column(column.data);
     }
 
@@ -69,11 +71,11 @@ vector<Matrix> Factor::QRHH(Matrix A){
 
         // V
         float sign = (x.get(k, 0) >= 0) ? 1.0f : -1.0f; /// NEW STEP HERE
-        vec.scale(sign * x.magnitude()); // ADDED SIGN *
+        vec.scale(sign * x.L2()); // ADDED SIGN *
         x = x - vec; 
 
-        if(x.magnitude() > 1e-6){ // Avoid Division By Zero
-            x.unit_mag();
+        if(x.L2() > 1e-6){ // Avoid Division By Zero
+            Data::unit_L2(&x);
 
             // Householder Matrix
             Matrix I(A.M, A.M);
@@ -99,28 +101,11 @@ vector<Matrix> Factor::QRHH(Matrix A){
 
 
 
-// A must be square matirx?....
-// i belive you can do non square matricies. 
-// perhaps u might need to edit this or something idk...
-vector<Matrix> Factor::LU(Matrix A){
-    Matrix L(A.M, A.N);
-
-    for(int i = 0; i < A.N; i++){
-        for(int j = i + 1; j < A.M; j++){
-            float s = A.get(j, i) / A.get(i, i);  
-            L.set(j, i, s); 
-            A.row_plus(j, -s, i); // rowj -= s * rowi
-        }
-    }
-
-    return {L, A};
-}
 
 
-// must be square matrix?....
-// must be symmetric matrix?....
-// symmetric requires being square?...
-// gpt implementation
+/**
+ * Hermitatian & Positive Definite
+ */
 vector<Matrix> Factor::cholesky(Matrix A){
     Matrix L(A.M, A.N, 0.0f);
 
@@ -148,4 +133,49 @@ vector<Matrix> Factor::cholesky(Matrix A){
     }   
 
     return {L, L.T()};
+}
+
+
+/**
+ * @returns {P, L, U}
+ */
+vector<Matrix> Factor::LU(Matrix A){
+    Matrix L(A.M, A.M); 
+    Matrix P(A.M, A.M); // Idneity Matricies
+
+    int index = 0; // pivot row
+    for(int i = 0; i < A.N; i++){
+        // Partial Pivoting
+        float max = 0.0f; 
+        int new_j = index; 
+        for(int j = index; j < A.M; j++){
+            if(abs(A.get(j, i)) > max){
+                max = abs(A.get(j, i));
+                new_j = j;
+            }
+        }
+        
+        if(!(max == 0.0f)){
+            // Pivot Matrix
+            Guass::swap_col(index, new_j, &P);
+            Guass::swap_row(index, new_j, &L);
+            Guass::swap_col(index, new_j, &L);
+            Guass::swap_row(index, new_j, &A);
+
+            // U
+            for(int j = index + 1; j < A.M; j++){
+                float s = A.get(j, i) / A.get(index, i);  
+                L.set(j, i, s); 
+                Guass::row_plus(j, -s, index, &A); // rowj -= s * rowi
+            }
+
+        }
+        
+        index++; 
+        if(index >= A.M){
+            break;
+        }
+    }
+
+    return {P, L, A};
 }

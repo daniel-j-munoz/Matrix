@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include "../Matrix/Data.h"
 
 
 // Graph Curve 
@@ -28,18 +29,18 @@ void Graph::show(){
         Matrix x = layer.get_column(0);
         Matrix y = layer.get_column(1);
 
-        a = min(a, x.min());
-        b = max(b, x.max());
-        c = min(c, y.min());
-        d = max(d, y.max());
+        a = min(a, Data::min(x)[0]);
+        b = max(b, Data::max(x)[0]);
+        c = min(c, Data::min(y)[0]);
+        d = max(d, Data::max(y)[0]);
     }
 
     for(Matrix layer : layers){
         Matrix x = layer.get_column(0);
         Matrix y = layer.get_column(1);
 
-        x.range(a, b, 0, WIDTH);
-        y.range(c, d, (3.0f / 4.0f) * HEIGHT, (1.0f / 4.0f) * HEIGHT);
+        Data::range(a, b, 0, WIDTH, &x);
+        Data::range(c, d, (3.0f / 4.0f) * HEIGHT, (1.0f / 4.0f) * HEIGHT, &y);
 
         // Plot Layer
         for(int i = 0; i < x.M; i++){
