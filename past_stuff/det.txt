@@ -33,3 +33,50 @@ vector<Matrix> Factor::LU(Matrix A){
 
 
 // inversion via cofactor and stuff??
+
+
+
+
+
+
+
+
+
+// w/ table comments and stuff...
+float Root::newton(float x0){
+    float x = x0;
+    float past_x;
+    float threshold = 1e-6;
+    float delta;
+
+    cout << setw(1) << "n" 
+            << setw(7) << "x_n" 
+            << setw(7*2 + 5) << "x_n - x_(n-1)" << "\n";
+    cout << "0" << fixed << setprecision(4) << setw(9) << x << "\n";
+
+    for(int i = 0; i < 1000; i++){
+        float f = function.at(x);
+        float f_prime = d_function.at(x);  
+
+        if(abs(f_prime) < 1e-6 || abs(x - x0) > 1e+6){ // Avoid Division by Zero
+            
+            throw::runtime_error("diverged"); // diverged?...
+        } else {
+            cout << (i + 1);
+            past_x = x;
+            x -= (f / f_prime);
+            delta = abs(x - past_x);
+
+            cout << fixed << setprecision(4) << setw(9) << x << setw(12) << delta << "\n";
+
+            if(delta < threshold){
+                cout << "       converged\n";
+                break;
+            }
+
+
+        }
+    }
+
+    return x;
+}

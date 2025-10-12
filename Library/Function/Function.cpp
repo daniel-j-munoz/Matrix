@@ -3,23 +3,44 @@
 
 #include "Function.h"
 #include <iomanip>
-
-
+// tags here as wel??... idk...
 // x^0, x^1 ... x^n
-Function::Function(vector<float> values, float center){
-    this->values = values; 
+
+Function::Function(vector<float> alpha){
+    this->alpha = alpha; 
+    this->center = 0.0f;
+}
+
+Function::Function(vector<float> alpha, float center){
+    this->alpha = alpha; 
+    this->center = center;
+}
+
+Function::Function(vector<float> alpha, vector<float> beta){
+    this->alpha = alpha; 
+    this->beta = beta;
+    this->center = 0.0f;
+}
+
+Function::Function(vector<float> alpha, vector<float> beta, float center){
+    this->alpha = alpha; 
+    this->beta = beta;
     this->center = center;
 }
 
 float Function::at(float input){
 
     float sum = 0; // correct order?...
-    for(int nth = 0; nth < values.size(); nth++){
-        sum += values.at(nth) * pow(input - center, nth);
+    for(int nth = 0; nth < alpha.size(); nth++){
+        sum += alpha.at(nth) * pow(input - center, nth);
     }
     return sum;
 
     // return synth_rem(input);
+}
+
+float Function::deg(){ // or call DEG?...
+    return (alpha.size() - beta.size());
 }
 
 
@@ -37,44 +58,229 @@ Matrix Function::sample(float left, float right, float delta){
 
 
 Function Function::operator*(Function f){
-    vector<float> data(values.size() + f.values.size() - 1, 0.0f);
-    for(int i = 0; i < values.size(); i++){
-        for(int j = 0; j < f.values.size(); j++){
-            data[i + j] += values.at(i) * f.values.at(j);
+    vector<float> data(alpha.size() + f.alpha.size() - 1, 0.0f);
+    for(int i = 0; i < alpha.size(); i++){
+        for(int j = 0; j < f.alpha.size(); j++){
+            data[i + j] += alpha.at(i) * f.alpha.at(j);
         }
     }
     return Function(data, 0.0f);
 }
 
+/**
+ * @returns {Q, R}
+ */
+vector<Function> Function::operator/(Function f){
+    // if f is rational. multiply by recriprecal. 
+    // then divide
+
+    // syntheic division 
+    if(f.alpha.size() == 2){
+
+        float R;
+        float C = f.alpha[1]; 
+        f.alpha[0] = f.alpha[0] / f.alpha[1];
+        f.alpha[1] = 1.0f;
+        float value = alpha.back();
+        vector<float> Q(alpha.size() - 1);
+        Q[Q.size() - 1] = value;
+
+        for(int i = alpha.size() - 2; i >= 0; i--){
+            value *= -f.alpha[0];
+            value += alpha[i];
+
+            if(i == 0){
+                R = value; // Remainder
+            } else {
+                Q[i - 1] = value;
+            }
+        }
+
+
+        return {Function(Q) / C, Function({R}, f.alpha) / C};
+    } else { // Long Division
+        vector<float> Q(alpha.size() - f.alpha.size() + 1, 0.0f);
+        Function R = *this; // dividend
+
+        while(R.deg() >= f.deg()){
+            float c = R.alpha.back() / f.alpha.back();
+            Q[R.deg() - f.deg()] = c;
+            R = R - f * c;
+        }
+
+        return {Function(Q), Function(R.alpha, f.alpha)};
+    }
+
+    // returns two functions...
+}
+
 Function Function::operator*(float scale){
     Function f = *this;
-    for(int i = 0; i < f.values.size(); i++){
-        f.values[i] *= scale;
+    for(int i = 0; i < f.alpha.size(); i++){
+        f.alpha[i] *= scale;
     }
     return f;
 }
 
+Function Function::operator/(float scale){
+    Function f = *this;
+    for(int i = 0; i < f.alpha.size(); i++){
+        f.alpha[i] /= scale;
+    }
+
+    // or multiply beta by scale?....
+    return f;
+}
+
+Function& Function::operator*=(float scale) {
+    for (int i = 0; i < alpha.size(); i++) {
+        alpha[i] *= scale;
+    }
+    return *this;
+}
+
+Function& Function::operator/=(float scale) {
+    for (int i = 0; i < alpha.size(); i++) {
+        alpha[i] /= scale;
+    }
+    return *this;
+}
+
 Function Function::operator+(Function f){
-    vector<float> data(max(values.size(), f.values.size()), 0.0f);
-    for(int i = 0; i < values.size(); i++){
-        data[i] += values[i];
+    Function p = (Function(alpha) * Function(f.beta)) + (Function(beta) * Function(f.alpha));
+    Function q = (*this) * f;
+    return Function(p.alpha, q.alpha);
+}
+
+Function Function::operator-(Function f){
+    vector<float> data(max(alpha.size(), f.alpha.size()), 0.0f);
+    for(int i = 0; i < alpha.size(); i++){
+        data[i] += alpha[i];
     }
 
-    for(int i = 0; i < f.values.size(); i++){
-        data[i] += f.values[i];
+    for(int i = 0; i < f.alpha.size(); i++){
+        data[i] -= f.alpha[i];
     }
 
-    return Function(data, 0.0f);
+    return Function(data);
+}
+Function& Function::operator-=(Function f) {
+    *this = *this - f;  // Reuse operator-
+    return *this;
 }
 
 float Function::integrate(float a, float b){
     Function f = *this;
-    f.values.push_back(0.0f);
-    for(int i = f.values.size() - 1; i > 0; i--){
-        f.values[i] = f.values[i - 1] / i;
+    f.alpha.push_back(0.0f);
+    for(int i = f.alpha.size() - 1; i > 0; i--){
+        f.alpha[i] = f.alpha[i - 1] / i;
     }
     return f.at(b) - f.at(a);
 }
+
+Function Function::derivative(){
+    vector<float> alpha = {};
+
+    for(int nth = 1; nth < this->alpha.size(); nth++){
+        alpha.push_back(this->alpha.at(this->alpha.size() - nth - 1) * nth);
+    }
+
+    return Function(alpha);
+}
+
+
+
+
+
+
+// gpt generated
+void printPoly(vector<float>& coeffs, float center, int decimals) {
+    cout << fixed << setprecision(decimals);
+
+    bool firstTerm = true;
+    for (int i = 0; i < coeffs.size(); ++i) {
+        float coeff = coeffs[i];
+
+        // Skip zero coefficients
+        if (abs(coeff) < 1e-9) continue;
+
+        // Handle sign
+        if (!firstTerm) {
+            if (coeff >= 0)
+                cout << " + ";
+            else
+                cout << " - ";
+        } else {
+            if (coeff < 0)
+                cout << "-";
+            firstTerm = false;
+        }
+
+        // Print coefficient magnitude (omit 1 if not constant)
+        float absCoeff = abs(coeff);
+        if (!(absCoeff == 1.0f && i > 0))
+            cout << absCoeff;
+
+        // Print variable part
+        if (i >= 1) {
+            if (center == 0) {
+                cout << "x";
+            } else {
+                cout << "(x";
+                if (center > 0)
+                    cout << " - " << center;
+                else
+                    cout << " + " << -center;
+                cout << ")";
+            }
+
+            if (i >= 2)
+                cout << "^" << i;
+        }
+    }
+
+    if (firstTerm)
+        cout << "0";
+}
+
+void Function::print(int n) {
+    std::cout << "alpha: ";
+    printPoly(alpha, center, n);
+    std::cout << "\n";
+
+    std::cout << "beta:  ";
+    printPoly(beta, center, n);
+    std::cout << "\n\n";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // general integral return?....
 
@@ -82,50 +288,7 @@ float Function::integrate(float a, float b){
 
 
 
-// float Function::synth_rem(float value){
-//     float top;
-//     float bot = 0.0f;
-//     float rem;
 
-//     for(int ith = 0; ith < values.size(); ith++){
-//         float sum;
-//         top = values.at(ith); 
-//         sum = top + bot;
-//         rem = sum;
-
-//         bot = sum * value; 
-//     }
-
-//     return rem;
-// }
-
-// Function Function::synth_quot(float value){
-
-//     vector<float> new_values = {};
-//     float top;
-//     float bot = 0.0f;
-
-//     for(int ith = 0; ith < values.size() - 1; ith++){
-//         float sum;
-//         top = values.at(ith); 
-//         sum = top + bot;
-//         new_values.push_back(sum);
-//         bot = sum * value; 
-//     }
-
-//     return Function(new_values);
-// }
-
-
-// Function Function::derivative(){
-//     vector<float> values = {};
-
-//     for(int nth = 1; nth < this->values.size(); nth++){
-//         values.push_back(this->values.at(this->values.size() - nth - 1) * nth);
-//     }
-
-//     return Function(values);
-// }
 
 
 // float Function::nth_at(float nth, float value){
@@ -166,29 +329,15 @@ float Function::integrate(float a, float b){
 
 
 
+// calude synth div version...
 
+// float C = f.alpha[1];
+//         float R = alpha[0];
+//         vector<float> Q(alpha.size() - 1);
 
-// /**
-//  * Inclusive bounds
-//  * Returns {domain, codomain}
-//  */
-// vector<vector<float>> Function::sample(float a, float b, float delta){
+//         for(int i = alpha.size() - 1; i > 0; i--){
+//             Q[i - 1] = alpha[i];
+//             R -= Q[i - 1] * f.alpha[0];
+//         }
 
-//     vector<float> domain = {};
-//     vector<float> codomain = {};
-
-//     for(float x = a; x <= b; x += delta){
-//         domain.push_back(x); 
-//         codomain.push_back(at(x));
-//     }
-
-//     return {domain, codomain};
-// }
-
-// void Function::output_sample(float a, float b, float delta){
-//     vector<vector<float>> sample = this->sample(a, b, delta);
-//     cout << "n      x_n       f(x_n)\n";
-//     for(int i = 0; i < sample.at(0).size(); i++){
-//         cout << i << setw(10) << sample.at(0).at(i) << "" << setw(12) << sample.at(1).at(i) << "\n";
-//     }
-// }
+//         return {Function(Q) / C, Function({R}, f.alpha) / C};

@@ -9,10 +9,37 @@ using namespace cv;
 class Matrix {
     public: 
 
-        // Tags?....
 
-        // float mean; // ???
-        // float std; // ???
+
+        // To be used tags .....
+        // looking at properties can
+        // be used to do more efficent computat and stuff...
+        // e.g. inverse method etc....
+        
+        // bool orthogonal = false;
+        // bool permutation = false;
+        // bool row = false;
+        // bool column = false;
+        // bool singular = false;
+        // bool positive_definite = false;
+        // bool negative_definite = false;
+        // bool identity = false;
+        // bool zero = false;
+        // bool sparse = false;
+        // bool square = false;
+        // bool involutory = false;
+        // bool symmetric = false; 
+        // bool hermitian = false;
+        // bool diagonal = false;
+        // bool tridiagonal = false;
+        // bool right_triangle = false;
+        // bool left_triangle = false;
+        // bool upper_hessenberg = false;
+        // bool complex = false;
+
+        void tag();
+
+
 
         int M; 
         int N; 

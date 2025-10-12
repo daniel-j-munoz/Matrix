@@ -6,67 +6,15 @@ that works w/ generalized vector functions and stuff
 and essentially implment like jacobian matrix? 
 that would be pretty cool.
 
-// ..................... The Idea of Tags ...................................... INTERESTING IDEA!!!
-
-Here is an inncredibly interesting thought. 
-What if we add the concept of tags to our Matrix class. 
-Take for example a Matrix that has feilds, symmetric, identity, hermite, 2x2 etc. 
-as booleans that can indicate properties of the matrix. E.g. if symmetric was set to true,
-we know that the matrix is symmetric. 
-
-And what if we also added a tag method that can essentially search for these properties 
-and tag them as true or false. 
-
-By doing this, other methods could exploit these circumstances to avoid unnessecary computation. 
-E.g. rather than having to perform Matrix multiplication w/ an idenitity matrix. 
-We could simply return the matrix as itself avoiding computation. 
-
-And perhaps we could also tag these matricies manually even. Who knows...
-
-// .................................................................................
 
 
-// like i said before....
-// keep numbers as fractions and symbols and stuff...
-// dont immediatley turn into floating point to perhaps prevent information loss
-
+// avoid float point? symbolic computation?...
 
 // mean image? 
 // std image? 
 // dot image w/ mean to test if 
 // it's of that class? 
 // softmax the outputs?
-
-
-// ..................... Seperate Methods ...................................... IMPLEMENT...
-
-Instead of putting all of our methods in one class. I think we are going to sepearte it now
-since the class is so incredibly large. it's already at about 1500 lines. 
-It makes no sense to keep it in one place just so that we can use the dot operator. 
-matrix.method() vs Methods::method(matrix) 
-Both of these examples arent that far of from each other. 
-you still need to write down matrix, and you still need to write down the method. 
-Seperation would help tremendously and make things a little bit less overwhelming and large.
-and more organized and stuff...
-
-we should probably seperate fourier transforms/convolutoins, decomposition methods. 
-im not sure what else to seperate. But we should seperate major things... and stuff...
-
-maybe seperate numerical eigen methods as well?...
-
-e.g.   Decomp::QR(matrix) rather than matrix.QR()
-
-dont really think it's that nessecary to have to construct things too...
-like... Decomp A(matrix) 
-A.QR(); // dont really think it's that nessecary
-
-// .................................................................................
-
-
-// change magnitude to L2() ??....
-// general p norm or something?.....
-LInfinity norm? L0 norm?
-
 
 weighted average of images?
 
@@ -75,59 +23,14 @@ weighted average of images?
 Matrix w/ general functions as elements?.....
 // differnt Matrix fcclasses for each case??.... who knows....
 
-
-// diagonalize matrix?.... 
-// using eigen values and stuf...
-
-
-
-instead of something like randomize_row()
-what if we do 
-Matrix row(1, 5);
-row.randomize(); 
-set_row(row); 
-// ?? 
-// yes or no?
-// stuff like scale_row is still helpful though...
-
-
 // set sub region method?
-
-
-// svd?
-// QR?? 
-// LU?...
-
-
-// general p norm?.....
-// L infinite norm?....
-
-
-
-
 // output table w/ vectors & matricies in each slot?
 
-
-
-
-
-
-
-
-
-
-is this project actually gaining some value or no...?....
-perhaps we could publish this?.... of course keeping the code secertive...
-// or maybe open source....??.... who knows......?....
-// could there be a way to create value off of this......?....
-i am not sure....
-
-
-
+// is this project of a little value now? or no...
+// idk...
 
 // random symmetric matrix? 
 // random hessenberg matrix. like random matrix but in a type of form?... interseting...
-
 
 // my guess is that the hgiher the dimension of the matrix. the less likely the QR algorithm is to converge. 
 // that is my guess... but i am not sure...
@@ -136,40 +39,17 @@ i am not sure....
 // least probable converging matrix?... figure out emperically?.... 
 // convergence depedingin on type of matrix?.. example hermitation and stuff...
 
-
-
-
-
 // THIS IS VERY INTERESTING... PERHAPS WE SHOULD IMPLEMENT ONE DAY MAYBE...
 now i am thinkking about computer vision tasks. 
 take for example reading a handwritten system of equations in a pretty standard form
 and then converting that into coefficents which can then be inputed here...
-
 also imagine reading input as handwriting for functions. and then putting that into a cas or something. 
-
 perhaps reading more interesting forms and figuring out how to understand that in standard form and stuff... hmm... intersting....
-
-
-
-partial pvitiong. when choosing the pivot. you choose the one w/ the largest abs value basically
-
-
-
+.......................
 
 // permutation matrix? 
  // randomize symmetric matrix?.... etc....  and other stuf.....
  // can randomize symmetric pos def square by randomize regular matrix then multiply w/ it's transpose.....
-
-
-
-
-// natural, clamped cubic spline?s
-// just name spline instead? e.g. spline()?
-
-// store spline as peice wise fucntion instead?.... 
-// then call sample on general peice wise function?...
-// peice wise function in general....
-// perhaps handle later?....
 
 // splines object?... 
 // stores nodes... 
@@ -242,7 +122,38 @@ roi but instead of getting we set?
 
 
 
+// downsampling? vec or mat?
 
 
-// move root finding here into here?... 
-// for function?.. for matrix?... idk?....
+
+
+
+// runge kutta
+
+// non linear ................
+// newtons method for nonlinear equations
+
+// Broydens method
+// Steepest decent?...
+https://www.youtube.com/watch?v=p0SBubUfwiI
+
+
+
+
+
+shuffle 
+frequeinces
+key & value pairs
+e.g. 2 -> 'a'
+imagine shuffling numerical data & the corresponding keys
+
+
+
+
+
+
+
+// remove center by expanding polynomial?...
+
+
+// nearest neighbor?... knn?... for vectors?.... 

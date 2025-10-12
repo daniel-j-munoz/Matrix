@@ -15,9 +15,27 @@ class Data {
         static void absolute(Matrix* A);
 
 
+        
         static vector<float> max(Matrix A);
         static vector<float> min(Matrix A);
+        static vector<int> knn(float x);    // just indices, or values as well?...
+        static int nn(float x, Matrix A);     // just nearest neightbor?...
+        static float threshold();
 
+
+
+
+        // find values from greaetest to least as well?
+        // not just sort?...
+
+
+        // sort shuffle?...
+
+
+
+
+        // knn for vectors as well??....
+        
 
 
         // Unitizing and Zeroing 

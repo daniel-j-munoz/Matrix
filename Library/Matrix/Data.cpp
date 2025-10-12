@@ -68,6 +68,18 @@ vector<float> Data::min(Matrix A){
     return {min, (float)row, (float)col}; 
 }
 
+int Data::nn(float x, Matrix A){
+    float min = std::numeric_limits<float>::max();
+    int index = -1;
+    for(int i = 0; i < A.data.size(); i++){
+        if(x - A.data[i] < min){
+            min = x - A.data[i];
+            index = i;
+        }
+    }
+    return index;
+}
+
 
 
 
@@ -89,18 +101,9 @@ void Data::unit_L(float p, Matrix *A){
 
 
 void Data::range(float a, float b, Matrix* A){
-    float max = Data::max(*A)[0];
     float min = Data::min(*A)[0];
-
-    if (max == min) {
-        return;
-    } else {
-        float factor = (b - a) / (max - min); 
-        vector<float> new_data; 
-        for(int ith = 0; ith < A->data.size(); ith++){
-            A->data[ith] = factor * (A->data[ith] - min) + a;
-        }
-    }    
+    float max = Data::max(*A)[0];
+    range(min, max, a, b, A);
 }
 
 void Data::range(float a, float b, float c, float d, Matrix* A){
@@ -114,6 +117,11 @@ void Data::range(float a, float b, float c, float d, Matrix* A){
         }
     }    
 }
+
+
+
+
+
 
 
 

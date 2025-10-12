@@ -51,7 +51,7 @@ Peice Interpolate::peice_wise_lagrange(Matrix data, int n){
             float scale = y[shift + k] / d;
             P = P + f * scale;
         }
-        peice.append(P.values, 0.0f, x[shift], x[shift + n]);
+        peice.append(P.alpha, 0.0f, x[shift], x[shift + n]);
     }
 
     return peice;

@@ -26,6 +26,8 @@
         "limits": "cpp",
         "__bit_reference": "cpp",
         "forward_list": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "stdexcept": "cpp",
+        "iostream": "cpp"
     }
 }
