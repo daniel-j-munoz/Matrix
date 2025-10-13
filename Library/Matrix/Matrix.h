@@ -60,6 +60,7 @@ class Matrix {
         // ............... Row & Col ................................................
         float get(int m, int n); 
         void set(int m, int n, float value);
+        // add method?... as in accumalte values?...
         Matrix get_row(int index); 
         Matrix get_column(int index); 
         void add_row(vector<float>& values);

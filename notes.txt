@@ -157,3 +157,7 @@ imagine shuffling numerical data & the corresponding keys
 
 
 // nearest neighbor?... knn?... for vectors?.... 
+
+
+
+implement the rest of stuff from numerical analysis book & stuf...
