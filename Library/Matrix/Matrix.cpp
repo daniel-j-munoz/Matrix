@@ -247,7 +247,7 @@ Matrix Matrix::get_row(int m){
     return Matrix(1, N, new_data);
 }
 
-void Matrix::add_row(vector<float>& values){
+void Matrix::add_row(vector<float> values){
     M++; 
     for(float value : values){
         data.push_back(value);
@@ -262,7 +262,7 @@ Matrix Matrix::get_column(int n){
     return Matrix(M, 1, new_data);
 }
 
-void Matrix::add_column(vector<float>& values){
+void Matrix::add_column(vector<float> values){
     vector<float> new_data;
     for(int m = 0; m < M; m++){
         for(int n = 0; n < N; n++){

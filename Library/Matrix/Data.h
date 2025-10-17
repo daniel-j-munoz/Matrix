@@ -23,6 +23,7 @@ class Data {
         static float threshold();
 
 
+        static Matrix swap(Matrix A, vector<float> swap);
 
 
         // find values from greaetest to least as well?
@@ -47,5 +48,8 @@ class Data {
 
         static void range(float a, float b, Matrix* A);
         static void range(float a, float b, float c, float d, Matrix* A);
+
+
+        static Matrix to_matrix(vector<float> entries);
 
 };

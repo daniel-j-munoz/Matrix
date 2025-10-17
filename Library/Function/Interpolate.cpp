@@ -4,58 +4,58 @@
 
 
 
-Function Interpolate::lagrange(Matrix data, int n){
-    vector<float> x = data.get_column(0).data;
-    vector<float> y = data.get_column(1).data;
+// Function Interpolate::lagrange(Matrix data, int n){
+//     vector<float> x = data.get_column(0).data;
+//     vector<float> y = data.get_column(1).data;
 
-    Function P({}, 0.0f);
-    for(int k = 0; k <= n; k++){
-        Function f({1}, 0.0f); 
-        float d = 1.0f;
-        for(int i = 0; i <= n; i++){
-            if(!(i == k)){
-                f = f * Function({-x[i], 1}, 0.0f);
-                d *= (x[k] - x[i]);
-            }
-        }
+//     Function P({}, 0.0f);
+//     for(int k = 0; k <= n; k++){
+//         Function f({1}, 0.0f); 
+//         float d = 1.0f;
+//         for(int i = 0; i <= n; i++){
+//             if(!(i == k)){
+//                 f = f * Function({-x[i], 1}, 0.0f);
+//                 d *= (x[k] - x[i]);
+//             }
+//         }
 
-        float scale = y[k] / d;
-        P = P + f * scale;
-    }
+//         float scale = y[k] / d;
+//         P = P + f * scale;
+//     }
 
-    return P;
-}
+//     return P;
+// }
 
 
 
-Peice Interpolate::peice_wise_lagrange(Matrix data, int n){
-    vector<float> x = data.get_column(0).data;
-    vector<float> y = data.get_column(1).data;
+// Peice Interpolate::peice_wise_lagrange(Matrix data, int n){
+//     vector<float> x = data.get_column(0).data;
+//     vector<float> y = data.get_column(1).data;
 
-    int size = data.M / (n + 1);
-    Peice peice;
+//     int size = data.M / (n + 1);
+//     Peice peice;
 
-    for(int z = 0; z < size; z++){
-        int shift = z * (n + 1);
-        Function P({}, 0.0f);
-        for(int k = 0; k <= n; k++){
-            Function f({1}, 0.0f); 
-            float d = 1.0f;
-            for(int i = 0; i <= n; i++){
-                if(!(i == k)){
-                    f = f * Function({-x[shift + i], 1}, 0.0f);
-                    d *= (x[shift + k] - x[shift + i]);
-                }
-            }
+//     for(int z = 0; z < size; z++){
+//         int shift = z * (n + 1);
+//         Function P({}, 0.0f);
+//         for(int k = 0; k <= n; k++){
+//             Function f({1}, 0.0f); 
+//             float d = 1.0f;
+//             for(int i = 0; i <= n; i++){
+//                 if(!(i == k)){
+//                     f = f * Function({-x[shift + i], 1});
+//                     d *= (x[shift + k] - x[shift + i]);
+//                 }
+//             }
 
-            float scale = y[shift + k] / d;
-            P = P + f * scale;
-        }
-        peice.append(P.alpha, 0.0f, x[shift], x[shift + n]);
-    }
+//             float scale = y[shift + k] / d;
+//             P = P + f * scale;
+//         }
+//         peice.append(P.alpha, 0.0f, x[shift], x[shift + n]);
+//     }
 
-    return peice;
-}
+//     return peice;
+// }
 
 
 

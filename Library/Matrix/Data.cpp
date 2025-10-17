@@ -289,3 +289,22 @@ void Data::range(float a, float b, float c, float d, Matrix* A){
 // // depending if it zeros or makes the quanityt a unit.
 
 
+
+
+
+
+
+
+
+Matrix Data::to_matrix(vector<float> data){
+    return Matrix(data.size(), 1, data);
+}
+
+
+Matrix Data::swap(Matrix A, vector<float> swap){
+    vector<float> output(A.data.size());
+    for(int i = 0; i < output.size(); i++){
+        output[i] = A.data[swap[i]];
+    }
+    return Matrix(output.size(), 1, output);
+}

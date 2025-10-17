@@ -10,36 +10,36 @@ float sign(float x){
     }
 }
 
-float Root::newton(float xo, Function function){
-    Function d_function = function.derivative();
-    float x = xo;
-    float e = 1e-6;
+// float Root::newton(float xo, Function function){
+//     Function d_function = function.derivative();
+//     float x = xo;
+//     float e = 1e-6;
 
-    for(int i = 0; i < 1000; i++){
-        if(abs(d_function.at(x)) < e || abs(x - xo) > 1e+6){ // Avoid Division by Zero
-            throw::runtime_error("diverged"); // diverged?...
-        } else {
-            float dx = function.at(x) / d_function.at(x);
-            x -= dx;
-            if(abs(dx) < e){
-                cout << "converged\n";
-                break;
-            }
-        }
-    }
+//     for(int i = 0; i < 1000; i++){
+//         if(abs(d_function.at({x})) < e || abs(x - xo) > 1e+6){ // Avoid Division by Zero
+//             throw::runtime_error("diverged"); // diverged?...
+//         } else {
+//             float dx = function.at({x}) / d_function.at({x});
+//             x -= dx;
+//             if(abs(dx) < e){
+//                 cout << "converged\n";
+//                 break;
+//             }
+//         }
+//     }
 
-    return x;
-}
+//     return x;
+// }
 
-Matrix Root::newton_horner(vector<float> xo, Function f){ // return matrix or vector of flaot?...
-    vector<float> roots = {};
-    for(int i = 0; i < f.alpha.size() - 1; i++){
-        float root = newton(xo.at(i), f);
-        roots.push_back(root);
-        f = (f / Function({-root, 1}))[0]; // Deflation
-    }
-    return Matrix(roots.size(), 1, roots);
-}
+// Matrix Root::newton_horner(vector<float> xo, Function f){ // return matrix or vector of flaot?...
+//     vector<float> roots = {};
+//     for(int i = 0; i < f.alpha.data.size() - 1; i++){
+//         float root = newton(xo.at(i), f);
+//         roots.push_back(root);
+//         f = (f / Function({-root, 1}))[0]; // Deflation
+//     }
+//     return Matrix(roots.size(), 1, roots);
+// }
 
 
 // /**

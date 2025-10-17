@@ -6,186 +6,231 @@
 // tags here as wel??... idk...
 // x^0, x^1 ... x^n
 
+
+// negative degrees?.... how to handle....
+
+Tensor Function::to_tensor(vector<float> data){
+    return Tensor(data);
+}
+
 Function::Function(vector<float> alpha){
-    this->alpha = alpha; 
+    this->alpha = to_tensor(alpha);
+    this->beta = Tensor({1}, 1.0f);
     this->center = 0.0f;
 }
 
 Function::Function(vector<float> alpha, float center){
-    this->alpha = alpha; 
+    this->alpha = to_tensor(alpha);
+    this->beta = Tensor({1}, 1.0f);
     this->center = center;
 }
 
 Function::Function(vector<float> alpha, vector<float> beta){
-    this->alpha = alpha; 
-    this->beta = beta;
+    this->alpha = to_tensor(alpha);
+    this->beta = to_tensor(beta);
     this->center = 0.0f;
 }
 
 Function::Function(vector<float> alpha, vector<float> beta, float center){
-    this->alpha = alpha; 
+    this->alpha = to_tensor(alpha);
+    this->beta = to_tensor(beta);
+    this->center = center;
+}
+
+Function::Function(Tensor alpha){
+    this->alpha = alpha;
+    this->beta = Tensor({1}, 1.0f);
+    this->center = 0.0f;
+}
+
+Function::Function(Tensor alpha, float center){
+    this->alpha = alpha;
+    this->beta = Tensor({1}, 1.0f);
+    this->center = center;
+}
+
+Function::Function(Tensor alpha, Tensor beta){
+    this->alpha = alpha;
+    this->beta = beta;
+    this->center = 0.0f;
+}
+
+Function::Function(Tensor alpha, Tensor beta, float center){
+    this->alpha = alpha;
     this->beta = beta;
     this->center = center;
 }
 
-float Function::at(float input){
-
-    float sum = 0; // correct order?...
-    for(int nth = 0; nth < alpha.size(); nth++){
-        sum += alpha.at(nth) * pow(input - center, nth);
+vector<float> get_swap(Map<string, int> newmap, Map<string, int> map){
+    vector<float> swap(newmap.size()); 
+    for(int dim = 0; dim < newmap.size(); dim++){
+        int new_dim = newmap.image(map.domain[dim]);
+        swap[new_dim] = dim; 
     }
-    return sum;
+    return swap;
+}
+// inverse. swap alpha and beta?...
 
-    // return synth_rem(input);
+// well its kind of like union minus intersection because thre common elements right?....
+
+
+
+
+void Function::rerank(int rank){
+    alpha = alpha.rerank(rank);
+    beta = beta.rerank(rank);
 }
 
-float Function::deg(){ // or call DEG?...
-    return (alpha.size() - beta.size());
+void Function::transpose(vector<float> swap){
+    alpha = alpha.T(swap);
+    beta = beta.T(swap);
 }
 
 
-Matrix Function::sample(float left, float right, float delta){
-    int size = (right - left) / delta;
-    Matrix output(size, 2, 0.0f);
-    int index = 0;
-    for(float i = left; i <= right; i += delta){
-        output.set(index, 0, i);
-        output.set(index, 1, at(i));
-        index++;
-    }
+
+
+
+
+void remap_me(Function* a, Function* b){
+    Map<string, int> map = Map<string, int>::merge(a->map, b->map);
+    map.print();
+
+
+    
+    a->rerank(map.size() - a->map.size());
+    b->rerank(map.size() - b->map.size());
+
+    a->beta.print_shape();
+    b->beta.print_shape();
+
+    a->map.merge(map);
+    b->map.merge(map);
+
+
+    // a->transpose(get_swap(map, a->map));
+    // b->transpose(get_swap(map, b->map));
+
+    // // seperate make union & remap?.... idk....
+
+    // Tensor::make_union({&a->alpha, &a->beta, &b->alpha, &b->beta});
+}
+
+
+Function Function::plus(Function function){
+    remap_me(this, &function);
+    Function output(alpha + function.alpha); // needs same var map as well...
+    output.map = map;
     return output;
 }
 
 
-Function Function::operator*(Function f){
-    vector<float> data(alpha.size() + f.alpha.size() - 1, 0.0f);
-    for(int i = 0; i < alpha.size(); i++){
-        for(int j = 0; j < f.alpha.size(); j++){
-            data[i + j] += alpha.at(i) * f.alpha.at(j);
-        }
+
+
+
+float Function::at(Tensor tensor, vector<float> x){
+    float sum = 0.0f;
+    for(int i = 0; i < tensor.data.size(); i++){
+        Matrix point = tensor.point(i);
+        float pro = tensor.data[i];
+        for(int j = 0; j < point.M; j++){
+            pro *= pow(x[j], point.get(j, 0));
+        }   
+        sum += pro;
     }
-    return Function(data, 0.0f);
+    return sum;
 }
+
+float Function::at(vector<float> x){
+    return at(alpha, x) / at(beta, x);
+}
+
+
+
+// so now i guess we sort of handle the data 
+// of x and y sepearlty now. 
+// rather than keeping them together... 
+// just writing what comes to head....
 
 /**
- * @returns {Q, R}
+ * a & b are bounds for each variable inclusive
  */
-vector<Function> Function::operator/(Function f){
-    // if f is rational. multiply by recriprecal. 
-    // then divide
+vector<Matrix> Function::sample(vector<float> a, vector<float> b, vector<float> delta){
+    // each row is a sample. 
+    // each col is element of index 
+    // or element of ouput basically
+    Matrix x(0, 0); // domain
+    Matrix y(0, 0); // codomain
+    
+    vector<float> index = a; 
+    bool done = false;
+    while (!done) {
+        x.add_row(index);
+        y.add_row({at(index)});
 
-    // syntheic division 
-    if(f.alpha.size() == 2){
+        for (int dim = index.size() - 1; dim >= 0; dim--) {
+            index[dim] += delta[dim];
+            if (index[dim] < b[dim]) {
+                break;
+            }
+            index[dim] = a[dim];
 
-        float R;
-        float C = f.alpha[1]; 
-        f.alpha[0] = f.alpha[0] / f.alpha[1];
-        f.alpha[1] = 1.0f;
-        float value = alpha.back();
-        vector<float> Q(alpha.size() - 1);
-        Q[Q.size() - 1] = value;
-
-        for(int i = alpha.size() - 2; i >= 0; i--){
-            value *= -f.alpha[0];
-            value += alpha[i];
-
-            if(i == 0){
-                R = value; // Remainder
-            } else {
-                Q[i - 1] = value;
+            if (dim == 0) {
+                done = true;
             }
         }
+    }
+
+    return {x, y};
+}
+
+// Define boundary for sampling beyond just a rectangular region?...
 
 
-        return {Function(Q) / C, Function({R}, f.alpha) / C};
-    } else { // Long Division
-        vector<float> Q(alpha.size() - f.alpha.size() + 1, 0.0f);
-        Function R = *this; // dividend
+Tensor Function::FOIL(Tensor a, Tensor b){
+    Tensor output({0});
 
-        while(R.deg() >= f.deg()){
-            float c = R.alpha.back() / f.alpha.back();
-            Q[R.deg() - f.deg()] = c;
-            R = R - f * c;
+    for (int ith = 0; ith < a.data.size(); ith++) {
+        Matrix point = a.point(ith);
+        for (int jth = 0; jth < b.data.size(); jth++) {
+            Matrix other_point = b.point(jth);
+            output.add(
+                (point + other_point).data,
+                a.get(point.data) * b.get(other_point.data)
+            );
         }
-
-        return {Function(Q), Function(R.alpha, f.alpha)};
     }
-
-    // returns two functions...
+    return output;
 }
 
-Function Function::operator*(float scale){
-    Function f = *this;
-    for(int i = 0; i < f.alpha.size(); i++){
-        f.alpha[i] *= scale;
-    }
-    return f;
-}
-
-Function Function::operator/(float scale){
-    Function f = *this;
-    for(int i = 0; i < f.alpha.size(); i++){
-        f.alpha[i] /= scale;
-    }
-
-    // or multiply beta by scale?....
-    return f;
-}
-
-Function& Function::operator*=(float scale) {
-    for (int i = 0; i < alpha.size(); i++) {
-        alpha[i] *= scale;
-    }
-    return *this;
-}
-
-Function& Function::operator/=(float scale) {
-    for (int i = 0; i < alpha.size(); i++) {
-        alpha[i] /= scale;
-    }
-    return *this;
+Function Function::operator*(Function other){
+    remap_me(this, &other);
+    alpha = FOIL(alpha, other.alpha);
+    beta = FOIL(beta, other.beta);
+    return Function(alpha, beta);
 }
 
 Function Function::operator+(Function f){
-    Function p = (Function(alpha) * Function(f.beta)) + (Function(beta) * Function(f.alpha));
+    Function p = (Function(alpha) * Function(f.beta)).plus(Function(beta) * Function(f.alpha));
     Function q = (*this) * f;
     return Function(p.alpha, q.alpha);
 }
 
+
+
 Function Function::operator-(Function f){
-    vector<float> data(max(alpha.size(), f.alpha.size()), 0.0f);
-    for(int i = 0; i < alpha.size(); i++){
-        data[i] += alpha[i];
-    }
-
-    for(int i = 0; i < f.alpha.size(); i++){
-        data[i] -= f.alpha[i];
-    }
-
-    return Function(data);
-}
-Function& Function::operator-=(Function f) {
-    *this = *this - f;  // Reuse operator-
-    return *this;
+    return (*this) + (f * -1.0f);
 }
 
-float Function::integrate(float a, float b){
-    Function f = *this;
-    f.alpha.push_back(0.0f);
-    for(int i = f.alpha.size() - 1; i > 0; i--){
-        f.alpha[i] = f.alpha[i - 1] / i;
-    }
-    return f.at(b) - f.at(a);
+
+
+
+
+Function Function::operator*(float scale){
+    return alpha * scale;
 }
 
-Function Function::derivative(){
-    vector<float> alpha = {};
-
-    for(int nth = 1; nth < this->alpha.size(); nth++){
-        alpha.push_back(this->alpha.at(this->alpha.size() - nth - 1) * nth);
-    }
-
-    return Function(alpha);
+Function Function::operator/(float scale){
+    return operator*(1.0f / scale);
 }
 
 
@@ -193,63 +238,64 @@ Function Function::derivative(){
 
 
 
-// gpt generated
-void printPoly(vector<float>& coeffs, float center, int decimals) {
-    cout << fixed << setprecision(decimals);
 
-    bool firstTerm = true;
-    for (int i = 0; i < coeffs.size(); ++i) {
-        float coeff = coeffs[i];
 
-        // Skip zero coefficients
-        if (abs(coeff) < 1e-9) continue;
+// change data in matrix to entries instead
+// better name? ... idk...
 
-        // Handle sign
-        if (!firstTerm) {
-            if (coeff >= 0)
+
+bool has_variables(vector<float> point){
+    bool state = false;
+    for(int dim = 0; dim < point.size(); dim++){
+        if(!(point[dim] == 0.0f)){
+            state = true; 
+            break;
+        }   
+    }
+    return state;
+}
+
+void print_mvp(Tensor alpha, Map<string, int> map, float center, int n){
+    bool first_term = true; 
+    for(int ith = 0; ith < alpha.data.size(); ith++){
+        vector<float> point = alpha.point(ith).data;
+
+        // Non Zero Term
+        if(!(alpha.get(point) == 0)){
+            if(!first_term){
                 cout << " + ";
-            else
-                cout << " - ";
-        } else {
-            if (coeff < 0)
-                cout << "-";
-            firstTerm = false;
-        }
-
-        // Print coefficient magnitude (omit 1 if not constant)
-        float absCoeff = abs(coeff);
-        if (!(absCoeff == 1.0f && i > 0))
-            cout << absCoeff;
-
-        // Print variable part
-        if (i >= 1) {
-            if (center == 0) {
-                cout << "x";
             } else {
-                cout << "(x";
-                if (center > 0)
-                    cout << " - " << center;
-                else
-                    cout << " + " << -center;
-                cout << ")";
+                first_term = false;
             }
 
-            if (i >= 2)
-                cout << "^" << i;
-        }
-    }
+            // Output Coefficient
+            if(!(alpha.get(point) == 1) || !has_variables(point)){  // Print if not 1, OR if constant term
+                cout << fixed << setprecision(n) << alpha.get(point);
+            }
 
-    if (firstTerm)
-        cout << "0";
+            // Output vars
+            for(int axis = 0; axis < point.size(); axis++){
+                int power = point[axis];
+                if(!(power == 0)){
+                    cout << map.pre_image(axis);
+                    if(!(power == 1)){
+                        cout << "^" << power;
+                    } 
+                } 
+            }
+        } 
+    }
 }
+
+
 
 void Function::print(int n) {
     std::cout << "alpha: ";
-    printPoly(alpha, center, n);
+    print_mvp(alpha, map, center, n);
     std::cout << "\n";
 
     std::cout << "beta:  ";
-    printPoly(beta, center, n);
+    print_mvp(beta, map, center, n);
     std::cout << "\n\n";
 }
 
@@ -265,6 +311,84 @@ void Function::print(int n) {
 
 
 
+//var map? ... map?... idk... other names?.... idk...
+
+
+
+
+
+// /**
+//  * @returns {Q, R}
+//  */
+// vector<Function> Function::operator/(Function f){
+//     // if f is rational. multiply by recriprecal. 
+//     // then divide
+
+//     // syntheic division 
+//     if(f.alpha.size() == 2){
+
+//         float R;
+//         float C = f.alpha[1]; 
+//         f.alpha[0] = f.alpha[0] / f.alpha[1];
+//         f.alpha[1] = 1.0f;
+//         float value = alpha.back();
+//         vector<float> Q(alpha.size() - 1);
+//         Q[Q.size() - 1] = value;
+
+//         for(int i = alpha.size() - 2; i >= 0; i--){
+//             value *= -f.alpha[0];
+//             value += alpha[i];
+
+//             if(i == 0){
+//                 R = value; // Remainder
+//             } else {
+//                 Q[i - 1] = value;
+//             }
+//         }
+
+
+//         return {Function(Q) / C, Function({R}, f.alpha) / C};
+//     } else { // Long Division
+//         vector<float> Q(alpha.size() - f.alpha.size() + 1, 0.0f);
+//         Function R = *this; // dividend
+
+//         while(R.deg() >= f.deg()){
+//             float c = R.alpha.back() / f.alpha.back();
+//             Q[R.deg() - f.deg()] = c;
+//             R = R - f * c;
+//         }
+
+//         return {Function(Q), Function(R.alpha, f.alpha)};
+//     }
+
+//     // returns two functions...
+// }
+
+
+
+
+
+
+// partial derivative & integerate w/ respect to some variable?...
+
+// float Function::integrate(float a, float b){
+//     Function f = *this;
+//     f.alpha.push_back(0.0f);
+//     for(int i = f.alpha.size() - 1; i > 0; i--){
+//         f.alpha[i] = f.alpha[i - 1] / i;
+//     }
+//     return f.at(b) - f.at(a);
+// }
+
+// Function Function::derivative(){
+//     vector<float> alpha = {};
+
+//     for(int nth = 1; nth < this->alpha.size(); nth++){
+//         alpha.push_back(this->alpha.at(this->alpha.size() - nth - 1) * nth);
+//     }
+
+//     return Function(alpha);
+// }
 
 
 
@@ -272,11 +396,8 @@ void Function::print(int n) {
 
 
 
-
-
-
-
-
+// function evulation w/ synth dev? 
+// ruffin or horner something like that?...
 
 
 
@@ -326,6 +447,17 @@ void Function::print(int n) {
 
 
 
+// float Function::deg(){ // or call DEG?...
+//     // return (alpha.size() - beta.size());
+
+// }
+
+/// ?.... im not sure..... if htis good or not?... idk....
+float Function::deg(int dim){
+    return (alpha.shape[dim] - beta.shape[dim]);
+}
+
+
 
 
 
@@ -341,3 +473,8 @@ void Function::print(int n) {
 //         }
 
 //         return {Function(Q) / C, Function({R}, f.alpha) / C};
+
+
+
+
+// make own vector class that handles negative indicies in a way?... that way we can better handle the case of negative exponents & stuff....

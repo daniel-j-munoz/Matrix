@@ -161,3 +161,36 @@ imagine shuffling numerical data & the corresponding keys
 
 
 implement the rest of stuff from numerical analysis book & stuf...
+
+
+3rd order tensor cube class?.... idk...
+
+
+
+
+
+// what if we make an additonal class for mult var poly? .... 
+// and keep one just for single variable?.... this idk......
+// or do i just genralize ebveryhting?....
+ // i have the single var version in the pre tensor git saved thing...
+
+
+
+
+
+Tensor Function::FOIL(Tensor a, Tensor b){
+    Tensor output({0});
+    for (int ith = 0; ith < a.data.size(); ith++) {
+        Matrix point = a.point(ith);
+        for (int jth = 0; jth < b.data.size(); jth++) {
+            Matrix other_point = b.point(jth);
+            output.add(
+                (point + other_point).data,
+                a.get(point.data) * b.get(other_point.data)
+            );
+        }
+    }
+    return output;
+}
+
+// foil method for matrix?... hm... interseting.....

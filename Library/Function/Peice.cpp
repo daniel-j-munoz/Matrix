@@ -26,7 +26,7 @@ Matrix Peice::sample(float left, float right, float delta){
             j = bounds.size() - 1;
         };
 
-        float y = peices[j].at(x);
+        float y = peices[j].at({x});
 
         // Set Data
         output.set(index, 0, x); 
@@ -42,32 +42,32 @@ void Peice::append(vector<float> coe, float center, float a, float b){
     bounds.push_back({a, b});
 }
 
-float Peice::integrate(float a, float b){
-    int left = -1; 
-    int right = -1;
-    for(int i = 0; i < bounds.size(); i++){
-        if(a >= bounds[i][0] && a <= bounds[i][1]){
-            left = i;
-        }
+// float Peice::integrate(float a, float b){
+//     int left = -1; 
+//     int right = -1;
+//     for(int i = 0; i < bounds.size(); i++){
+//         if(a >= bounds[i][0] && a <= bounds[i][1]){
+//             left = i;
+//         }
         
-        if(b >= bounds[i][0] && b <= bounds[i][1]){
-            right = i;
-        }
+//         if(b >= bounds[i][0] && b <= bounds[i][1]){
+//             right = i;
+//         }
         
-        if(!(left == -1) && !(right == -1)){
-            break;
-        }
-    }
+//         if(!(left == -1) && !(right == -1)){
+//             break;
+//         }
+//     }
 
-    float sum = 0.0f;
-    for(int i = left; i <= right; i++){
-        if(i == left){
-            sum += peices.at(i).integrate(a, bounds[i][1]);
-        } else if(i == right){
-            sum += peices.at(i).integrate(bounds[i][0], b);
-        } else {
-            sum += peices.at(i).integrate(bounds[i][0], bounds[i][1]);
-        }
-    }
-    return sum;
-}
+//     float sum = 0.0f;
+//     for(int i = left; i <= right; i++){
+//         if(i == left){
+//             sum += peices.at(i).integrate(a, bounds[i][1]);
+//         } else if(i == right){
+//             sum += peices.at(i).integrate(bounds[i][0], b);
+//         } else {
+//             sum += peices.at(i).integrate(bounds[i][0], bounds[i][1]);
+//         }
+//     }
+//     return sum;
+// }

@@ -17,23 +17,34 @@ using namespace cv;
 
 int main(){
 
+    Tensor data = Tensor({3, 3});
+    data.add({0, 0}, 1.0f); // x^0
+    data.add({1, 0}, 3.0f); // x^1
+    data.add({2, 0}, 5.0f); // x^2
+    
+    data.add({0, 0}, 4.0f); // y^0
+    data.add({0, 1}, 3.0f); // y^1
+    data.add({0, 2}, 2.0f); // y^2
+
+    
+    Function a(data);
+    a.map.add("a", 0);
+    a.map.add("b", 1);
+
+    Function b(data);
+    b.map.add("x", 0);
+    b.map.add("y", 1);
 
 
-    Function a({5, 0, 3, 7});
-
-    float area = Area::guass_legendre(a.sample(-5, 5, 0.1f));
 
 
 
-
-    // Function f({1, 1, 1, 1}, 2);
-    // f.print(0);
-
-
-    // Root::newton_horner({0, 0, 0}, f).T().print(2);
+    Function c = (a.plus(b));
+    // c.print(2);
 
 
-    // f.derivative().print(0);
+
+
 
     return 0;
 
@@ -43,3 +54,10 @@ int main(){
 
 
 
+
+
+
+    // Function f({1, 1, 1, 1}, 2);
+    // f.print(0);
+    // Root::newton_horner({0, 0, 0}, f).T().print(2);
+    // f.derivative().print(0);

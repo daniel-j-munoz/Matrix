@@ -63,11 +63,11 @@ class Matrix {
         // add method?... as in accumalte values?...
         Matrix get_row(int index); 
         Matrix get_column(int index); 
-        void add_row(vector<float>& values);
+        void add_row(vector<float> values);
 
 
 
-        void add_column(vector<float>& values);
+        void add_column(vector<float> values);
         void add_column(Matrix column);
         void add_matrix(Matrix A);
         
