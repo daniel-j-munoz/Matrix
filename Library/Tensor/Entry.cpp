@@ -1,6 +1,6 @@
 #include "Entry.h"
 
-Entry::Entry(vector<int> dim, vector<int> index, float value){
+Entry::Entry(vector<int> dim, vector<int> index, Q value){
     this->dim = dim;
     this->index = index;
     this->value = value;

@@ -1,0 +1,74 @@
+
+factoring a polynomial?... w/ root finding?... other algos?...
+partial at method?... returns function...
+compound operators 
+expand polynomial w/ center
+factor wrt to a variable
+LCD GCF of polynomial etc... 
+long & synthetic division now w/ multivariate polynomials
+derivative & integral now w/ mvp
+composite mvp
+sampling mvps
+power method?... repeated multiplication, negative exponent means flip. then multiply & stuff...
+Partial Fraction Decompoistion
+integral function
+limits? limit of infite?
+e.g. 0, inf, or ratio of leading ceofficients
+Q + R/P format rather than 
+p/q ?... idk...
+
+
+
+//var map? ... map?... idk... other names?.... idk...
+// long division
+// partial derivative & integerate w/ respect to some variable?...
+// function evulation w/ synth div or sum?
+// ruffini rule?...
+// general integral return?....
+// nth derivative w/ synth div?...
+
+
+
+
+
+
+
+// so now i guess we sort of handle the data 
+// of x and y sepearlty now. 
+// rather than keeping them together... 
+// just writing what comes to head....
+
+// /**
+//  * a & b are bounds for each variable inclusive
+//  */
+// vector<Matrix> Function::sample(vector<float> a, vector<float> b, vector<float> delta){
+//     // each row is a sample. 
+//     // each col is element of index 
+//     // or element of ouput basically
+//     Matrix x(0, 0); // domain
+//     Matrix y(0, 0); // codomain
+    
+//     vector<float> index = a; 
+//     bool done = false;
+//     while (!done) {
+//         x.add_row(index);
+//         y.add_row({at(index)});
+
+//         for (int dim = index.size() - 1; dim >= 0; dim--) {
+//             index[dim] += delta[dim];
+//             if (index[dim] < b[dim]) {
+//                 break;
+//             }
+//             index[dim] = a[dim];
+
+//             if (dim == 0) {
+//                 done = true;
+//             }
+//         }
+//     }
+
+//     return {x, y};
+// }
+
+// Define boundary for sampling beyond just a rectangular region?...
+// some sort of partial at. dim and index?... retruns function. so kind of like a level curve soemting like that...

@@ -9,7 +9,8 @@ using namespace cv;
 class Matrix {
     public: 
 
-
+        // operator^ method?...
+        // negative means inverse then exponentite and stuf..
 
         // To be used tags .....
         // looking at properties can

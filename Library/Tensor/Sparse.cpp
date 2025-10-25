@@ -17,10 +17,10 @@ Sparse Sparse::operator+(Sparse other){
 }
 
 Sparse Sparse::operator-(Sparse other){
-    return (*this) + (other * -1.0f);
+    return (*this) + (other * Q(-1, 1));
 }
 
-Sparse Sparse::operator*(float scale){
+Sparse Sparse::operator*(Q scale){
     Sparse output = *this;
     for(int i = 0; i < output.entries.size(); i++){
         output.entries[i].value *= scale;
@@ -28,8 +28,17 @@ Sparse Sparse::operator*(float scale){
     return output;
 }
 
-Sparse Sparse::operator/(float scale){
-    return (*this) * (1.0f / scale);
+Sparse Sparse::operator*(int z){
+    return *this * Q(z, 1);
+}
+
+Sparse Sparse::operator/(Q q){
+    q.flip();
+    return (*this) * q;
+}
+
+Sparse Sparse::operator/(int z){
+    return (*this) * Q(1, z);
 }
 
 
@@ -44,20 +53,10 @@ void Sparse::add(Entry entry){
     entries.push_back(entry);
 }
 
-void Sparse::add(vector<int> dim, vector<int> index, float value){
+void Sparse::add(vector<int> dim, vector<int> index, Q value){
     add(Entry(dim, index, value));
 }
 
 
 
 
-
-
-// division...?...
-// tensor product?...
-// contraction?..
-// foiling?...
-// inverse?...
-// get?...
-// shape is a bit more dynamic now...
-// subspace?...
