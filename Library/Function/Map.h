@@ -1,5 +1,6 @@
 #include <iostream> 
 #include <string>
+#include <vector>
 
 using namespace std; 
 
@@ -98,40 +99,6 @@ class Map {
             codomain = {};
         }
 
-        
-        // set can be confused w/ set element?....
-        // finds unique domain elements .....i believe so...
-        // cal unique?..
-        // unique_domain?...
-
-        // call merge instead?...
-        static Map<Domain, Codomain> merge(Map a, Map b){
-            Map<Domain, Codomain> map;
-
-            for(int i = 0; i < a.size(); i++){
-                if(!map.contains(a.domain[i])){
-                    map.add(a.domain[i], a.codomain[i]);
-                }
-            }
-
-            for(int i = 0; i < b.size(); i++){
-                if(!map.contains(b.domain[i])){
-                    map.add(b.domain[i], b.codomain[i]);
-                }
-            }
-
-            map.enumerate();
-
-            return map;
-        }
-
-
-
-
-
-
-        // domain_contains
-        // codomain_contains?....
 
         bool contains(Domain element){
             for(Domain thing : domain){
@@ -142,31 +109,11 @@ class Map {
             return false;
         }        
 
-        // merge domains? ... merge codomains?...
-        // merge?... add??....
-        // merge domains by default?..... idk.... to avoid repeating codomains?.... idk?....
-        // what if merge requries that domain & codomain be unqiue?.....
-        // so it requries that unqieu domain codomain pair?....
-        
-        // merges two maps. void or copy?...
-        // does not repeat things...?...
-        void merge(Map<Domain, Codomain> map){
-            for(int i = 0; i < map.domain.size(); i++){
-                if(!contains(map.domain[i])){
-                    add(map.domain[i], map.codomain[i]);
-                }
-            }
-            enumerate();
-        }
-
         void enumerate(){
             for(int i = 0; i < size(); i++){
                 codomain[i] = i;
             }
         }
-
-        void sort_domain();
-        void sort_codomain(); 
 
 
         void print(){
@@ -179,20 +126,6 @@ class Map {
 
 
 
-
-
-        //.                    includes only...
-        // merge                unique domain codomain pair
-        // merge_domains        unique domain
-        // merge_codomains       unique codmain
-        // idk..............
-        // maybe doesnt ahave to be unique idk.....
+        
 };
 
-
-
-// pre image could return vector of preimages?...
-// image could return vector of images?.... multiple mappings??...
-// idk... woryy about that later.... fine for right now...
-// just wory about it later..... just writing what comes to ehad...
-// another class that handles non uneique mappings?.... idkk.... wory about it later....

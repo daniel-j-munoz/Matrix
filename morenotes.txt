@@ -1,0 +1,282 @@
+polynomial ^ (polynomial) ?...
+set polynomial equal to variable?...
+
+read mult var polynomials. along w/ capturing/accumalte data
+in a way that sort of simplfies it as well. 
+
+we will probably handle vectors/matricies w/ polynomial elements...
+you can do tensors as well... but matricies for now...
+
+geometric or arithmetic sequence constructor?.....
+graph, variable sliders
+system of sing/mult var polynomails?
+gcf of coefficentss or polynomails
+min and max deg of one variable. 
+factoring
+root finding mult var?
+composite?
+
+ratio of integers. more accurate coefficets?...
+ratio of integers class rather than using float... 
+
+pow just repated multiplication...
+
+diagonal matrix and tridigonal matrix?...
+special ways of handling and stuff?... store diagonal array and stuff?...
+
+equation solving simplfies down to root finding?.... or no...?....
+
+word variables?.... e.g. _variable_ ?... or no...?....
+
+shunting yard w/ polynomials instead of #'s as well?...
+
+at({dimensions}, {values}) returns level curve something like that?...
+
+partial derivative w/ respect to a specifed variable?
+and integral wrt to a specified variable?...
+
+a single variable polynomial class might still be useful?...
+cos, sin, e^x, ln(x), etc?... handling such things?...
+
+
+vector<int> Tensor::flat_to_coordinate(int index){
+    int order = shape.size(); // # dimensions
+    vector<int> coordinate(order, 0);
+    for(int nth = 0; nth < order; nth++){
+        coordinate[nth] = index / offset[nth]; 
+        index %= offset[nth];
+    }
+    return coordinate;
+}
+// multi_index(index) ? instead of flat to coordinate
+// or how about point?...
+
+
+
+/**
+ * @param size Size at each Dimension
+ * e.g. layers, rows, columns. 
+ */
+Tensor::Tensor(vector<int> shape){
+    vector<int> offset = {}; 
+
+    // Find Max Offset 
+    int total_size = 1; 
+    for(int size : shape){
+        total_size *= size; 
+    }
+    vector<float> data = vector<float>(total_size, 0.0f);
+
+    // Calculate Strides 
+    int stride = 1; 
+    offset.insert(offset.begin(), 1);
+    int start = shape.size() - 2;
+    for(int i = start; i >= 0; i--){
+        stride *= shape[i + 1];
+        offset.insert(offset.begin(), stride);
+    }
+
+    this->shape = shape; 
+    this->offset = offset; 
+    this->data = data; 
+};
+
+float Tensor::get(vector<int> indices){
+    int spot = 0; 
+    for(int i = 0; i < indices.size(); i++){
+        spot += indices[i] * offset[i];
+    }
+    return data[spot];
+}
+
+
+
+
+
+
+// void Tensor::add(vector<int> indices, float value){
+//     int spot = 0; 
+//     for(int i = 0; i < indices.size(); i++){
+//         spot += indices[i] * offset[i];
+//     }
+//     data[spot] += value;
+// }
+
+
+// transpose?...
+
+
+
+
+
+void Function::print(){
+    bool first_term = true; 
+    for(int ith = 0; ith < tensor.data.size(); ith++){
+        vector<int> coordinate = tensor.flat_to_coordinate(ith);
+
+        // Non Zero Term
+        if(!(tensor.get(coordinate) == 0)){
+            if(!first_term){
+                cout << " + ";
+            } else {
+                first_term = false;
+            }
+
+            // Output Coeffeicient
+            if(!(tensor.get(coordinate) == 1)){
+                cout << tensor.get(coordinate);
+            }
+
+            // Output vars
+            for(int axis = 0; axis < coordinate.size(); axis++){
+                int power = coordinate[axis];
+                if(!(power == 0)){
+                    cout << var_map.pre_image(axis);
+                    if(!(power == 1)){
+                        cout << "^" << power;
+                    } 
+                } 
+            }
+        } 
+    }
+}
+
+
+//  polynomial reading..............
+Function::Function(string function){
+    vector<string> tokens = tokenize(function);
+    vector<vector<string>> terms = get_terms(tokens);
+    this->var_map = variable_mapping(tokens);
+    
+    Tensor numbers({0});
+    Map<string, int> powers; 
+
+    int number = 0;
+    for(vector<string> term : terms){
+        powers.domain = var_map.domain; 
+        powers.codomain = vector<int>(var_map.size(), 0);
+        for(int i = 0; i < term.size(); i++){
+            string token = term[i];
+            if(is_number(token[0]) && (i == 0 || term[i - 1][0] != '^')){
+                number = stoi(token);
+            } else if(is_letter(token[0])){
+                int power = 1;
+                if((i + 1) < term.size() && term[i + 1][0] == '^'){
+                    power = stoi(term[i + 2]);
+                } 
+                powers.set_image(token, power);
+            }
+        }
+
+        if(number == 0){
+            number = 1;  
+        }
+
+        numbers.add(powers.codomain, number);
+        number = 0; 
+    }
+
+    this->tensor = numbers;
+}
+
+
+
+
+namespace String {
+
+    bool is_letter(char character){
+        if(
+            ('a' <= character && character <= 'z') ||
+            ('A' <= character && character <= 'Z')
+        ){
+            return true; 
+        } else {
+            return false;
+        }
+    }
+
+    bool is_number(char character){
+        if('0' <= character && character <= '9' || character == '.'){
+            return true; 
+        } else {
+            return false;
+        }
+    }
+
+    bool is_operator(char character) {
+        if (
+            character == '+' || character == '-' ||
+            character == '*' || character == '/' ||
+            character == '^' || character == '(' ||
+            character == ')'
+        ){
+            return true; 
+        } else {
+            return false;
+        }
+    }
+
+    bool is_plus(char character){
+        if(character == '+'){
+            return true; 
+        } else {
+            return false;
+        }
+    }
+
+    bool is_minus(char character){
+        if(character == '-'){
+            return true; 
+        } else {
+            return false;
+        }
+    }
+
+    vector<string> tokenize(string expression){
+        vector<string> tokens; 
+        string number = "";
+
+        // Tokenize
+        for(char character : expression){
+            if(is_number(character)){
+                number += character;
+            } else if(is_letter(character) || is_operator(character)){
+                if(number.size() > 0){
+                    tokens.push_back(number); 
+                    number = "";
+                }
+
+                tokens.push_back(string(1, character));
+            }
+        }
+
+        // Additional Number
+        if(number.size() > 0){
+            tokens.push_back(number); 
+            number = "";
+        }
+
+        return tokens;
+    }
+
+    vector<vector<string>> get_terms(vector<string> tokens){
+        vector<vector<string>> terms;
+        vector<string> term;
+        for(string token : tokens){
+            if(is_plus(token[0]) || is_minus(token[0])){
+                terms.push_back(term);
+                term.clear();
+            } else {
+                term.push_back(token);
+            }
+        }
+
+        if(term.size() > 0){
+            terms.push_back(term);
+        }
+
+        return terms;
+    }
+
+
+}
