@@ -9,7 +9,13 @@ class Function {
     public: 
         float center;
 
-        Sparse terms;
+        // vector<monomial> monomials = {};
+
+        
+
+        // Sparse terms;
+        // monomials?...
+
         Function(Sparse terms);
 
         Function operator+(Function f);
@@ -25,17 +31,27 @@ class Function {
 
         Function operator^(int power);
 
+
+        // compound operators
         void operator+=(Function f);
         void operator-=(Function f);
         void operator*=(Function f);
         void operator/=(Function f); 
+        void operator^=(int n);
 
 
+        int max_deg(int dim);
+        int min_deg(int dim);
+        vector<Function> group(int dim);
 
 
+        static Function monomial_product(vector<int> shell, vector<int> point, Q number, vector<int> next_shell, vector<int> next_point, Q next_number);
 
         Function gcf(Function f);
         Function lcm(Function f);
+
+
+
 
 
 
@@ -70,3 +86,5 @@ class Function {
 // decompose
 // expand in terms of... 
 // find expression using expansion in terms of...
+
+// lc, lm?... leading coeff, leading monomial?>..

@@ -110,3 +110,14 @@ int Q::lcm(int a, int b){
 
 // i guess you could have another class that handles integers no ratios and stuff
 //  but will do it like this for now....
+
+
+
+// equality checking 
+bool Q::operator==(Q q){
+    if(alpha == q.alpha && beta == q.beta){
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -1,15 +1,20 @@
 #include <iostream>
 using namespace std;
-#include "Entry.h"
+#include "../Function/Q.h"
 
+// sparse.list?.. yes no?...
+// can have negative points & stuff..
 
 #pragma once
 class Sparse {
     public: 
-        vector<Entry> entries;
+        vector<vector<int>> shells = {};
+        vector<vector<int>> points = {};
+        vector<Q> numbers = {};
+
 
         Sparse();
-        Sparse(vector<Entry> entries);
+        Sparse(vector<vector<int>> shells, vector<vector<int>> points, vector<Q> numbers);
 
 
         Sparse operator+(Sparse other);
@@ -20,9 +25,19 @@ class Sparse {
         Sparse operator/(Q q);
         Sparse operator/(int z);
 
-        void add(Entry entry);
+
         void add(vector<int> index, float value);
-        void add(vector<int> dim, vector<int> index, Q value);
+        void add(vector<int> shell, vector<int> point, Q number);
+
+
+
+        static void sort(vector<int>* a, vector<int>* b);
+        static void remove_zeros(vector<int>* shell, vector<int>* point); 
+
+        static bool origin(vector<int> shell);// call at origin?... idk... other names?>...
+        static void form(vector<int>* shell, vector<int>* point);
+        static bool equal(vector<int>* shell, vector<int>* point, vector<int>* next_shell, vector<int>* next_point);
+
 };  
 
 

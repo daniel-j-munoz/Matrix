@@ -30,6 +30,10 @@ class Q {
         Q operator/(int other);
 
 
+
+        bool operator==(Q other);
+
+
         void flip();
         
         static int lcm(int a, int b);

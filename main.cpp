@@ -21,10 +21,14 @@ int main(){
 
 
 
+    Sparse s(
+        {{0, 1}, {0, 1}}, // shells
+        {{1, 1}, {1, 1}}, // points
+        {Q(3, 5), Q(0, 0)} // numbers
+    );
 
-    // vector<Entry> entries = {};
-    // entries.push_back(Entry({0, 1}, {0, 0}, Q(3, 3)));
-    // entries.push_back(Entry({0, 1}, {0, 0}, Q(3, 3)));
+    
+
 
 
 
