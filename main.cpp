@@ -7,12 +7,11 @@ using namespace cv;
 
 
 
-#include "Library/Tensor/Sparse.h"
+
 #include "Library/Function/Function.h"
 
 // does foil handle negative exponents right?/...
 
-#include "Library/Function/Q.h"
 
 
 
@@ -20,26 +19,35 @@ using namespace cv;
 int main(){
 
 
-
-    Sparse s(
-        {{0, 1}, {0, 1}}, // shells
-        {{1, 1}, {1, 1}}, // points
-        {Q(3, 5), Q(0, 0)} // numbers
-    );
-
     
 
 
+ 
+
+    Function a({});
+    a += Monomial({21}, {5}, 1);
+    a += Monomial({21}, {4}, 1);
+    a += Monomial({21}, {3}, 10);
+    a += Monomial({21}, {2}, 12);
+    a += Monomial({21}, {1}, 25);
+    a += Monomial({21}, {0}, 35);
+
+    Function b({});
+    b += Monomial({21}, {3}, 1);
+    b += Monomial({21}, {2}, 1);
+    b += Monomial({21}, {1}, 5);
+    b += Monomial({21}, {0}, 7);
+
+    a.print();
+    b.print();
+
+    Function c = (a / b)[0];
+    cout << c.monomials.size();
+    // c.lexisort();
+    // c.print();
 
 
-
-
-
-
-
-
-
-
+    // x^2 + 5 no remainder....
 
 
 

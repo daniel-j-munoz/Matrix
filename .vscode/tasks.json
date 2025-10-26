@@ -9,7 +9,6 @@
                 "-g",
                 "*.cpp",
                 "Library/*.cpp",
-                "Library/Tensor/*.cpp",
                 "Library/Matrix/*.cpp",
                 "Library/Function/*.cpp",
                 "-std=c++23",

@@ -1,132 +1,159 @@
 #include "Function.h"
 
 
-// get rid of sparse?.....
-// and just handle function as if it was like a sparse tensor?....
-// or no...?...
-// having sparse tensor is good generalization?.....
-// idk......
-
-
-
-Function::Function(Sparse terms){
-    this->terms = terms;
+Function::Function(vector<Monomial> monomials){
+    this->monomials = monomials;
+    // lexisort in here?...
 }
 
-Function Function::operator+(Function f){
-    return Function(terms + f.terms);
+Function Function::operator+(Function other){
+    Function copy = *this;
+    for(Monomial m : other.monomials){
+        copy += m;
+    }
+    return copy;
 }
 
-Function Function::operator-(Function f){
-    return Function(terms + (f.terms * -1));
-}
-
-Function Function::operator*(Function f){
-    // vector<Entry> entries = {};
-    // Sparse output(entries);
-
-    // for(Entry a : terms.entries){
-    //     for(Entry b : f.terms.entries){
-    //         vector<int> dim = a.dim;
-    //         vector<int> index = a.index;
-    //         for(int i = 0; i < b.dim.size(); i++){
-    //             // Search
-    //             bool found = false;
-    //             for(int j = 0; j < dim.size(); j++){
-    //                 if(b.dim[i] == dim[j]){
-    //                     index[j] += b.index[i];
-    //                     found = true;
-    //                 }
-    //             }
-    //             if(!found){
-    //                 dim.push_back(b.dim[i]);
-    //                 index.push_back(b.index[i]);
-    //             }
-    //         }
-    //         output.add(Entry(dim, index, a.value * b.value));
-    //     }
-    // }
-    // return output;
-
-
-    Function output();
-
-    for(int i = 0; i < terms.numbers.size(); i++){
-        for(int j = 0; j < f.terms.numbers.size(); j++){
-
-            // multiply terms... multiply term function?...
-            Function prod = monomial_product();
-            output += prod;
-
+Function Function::operator+(Monomial other){
+    Function copy = *this;
+    for(int i = 0; i < copy.monomials.size(); i++){
+        if(copy.monomials[i].like_terms(other)){
+            copy.monomials[i].number += other.number;
+            return copy;
         }
     }
+
+    copy.monomials.push_back(other);
+    // lexisort here?...
+    copy.lexisort();
+    return copy;
 }
 
 
-int index_of(vector<int> list, int x){
-    for(int i : list){
-        if(list[i] == x){
-            return i;
+Function Function::operator-(Function other){
+    return *this + (other * -1);
+}
+
+Function Function::operator*(int x){
+    Function copy = *this;
+    for(int i = 0; i < copy.monomials.size(); i++){
+        copy.monomials[i] = copy.monomials[i] * x;
+    }
+    return copy;
+}
+
+Function Function::operator*(Function other){
+    Function c({});
+    for(Monomial a : monomials){
+        for(Monomial b : other.monomials){
+            c += (a * b);
         }
     }
-    return -1;
+    return c;
 }
 
+vector<Function> Function::operator/(Function divisor){
+    Function Q({}); 
+    Function R({}); 
+    Function remainder = *this;
 
-Function Function::monomial_product(vector<int> shell, vector<int> point, Q number, vector<int> next_shell, vector<int> next_point, Q next_number){
-    for(int i = 0; i < next_shell.size(); i++){
-        int index = index_of(shell, next_shell[i]); 
-        if(index == -1){
-            shell.push_back(next_shell[i]);
-            point.push_back(next_point[i]);
+    while(remainder.monomials.size() > 0){
+        Monomial a = remainder.lm(); 
+        Monomial b = divisor.lm();
+
+        if(b.divides(a)){
+            Monomial q = a / b; 
+            Q += q;
+            remainder -= divisor * q;
+            remainder.lexisort();
         } else {
-            point[i] += next_point[i];
+            R += a;
+            remainder.monomials.pop_back();
         }
     }
 
-    number *= next_number;
-
-    return Function(Sparse({shell}, {point}, {number}));
+    return {Q, R};
 }
 
-vector<Function> Function::operator/(Function f){
+bool compare(Monomial& a, Monomial& b){ // const as well?... or no....?...
+    a.form();
+    b.form();
 
-    // long diviosn....
+    if(!(a.constant() && b.constant())){
+        for (int i = 0; i < a.shell.size(); ++i) {
+            if (!(a.shell[i] == b.shell[i])) {
+                return a.shell[i] < b.shell[i];
+            }
 
-    // you have to group & stuf...
-
-   
-    
-}
-
-
-
-
-
-
-vector<Function> Function::group(int dim){
-    // for(int i = 0; i < terms.entries.size(); i++){
-    //     if(terms.entries[i].)
-    // }
-
-    vector<Function> output = {};
-
-    for(Entry entry : terms.entries){
-
-
-        int index = index_of(entry, dim);
-        for(int i = 0; i < entry.dim.size(); i++){
-            if(!(i == index)){
-                entry.dim[i];
-                entry.index[i];
+            if (!(a.point[i] == b.point[i])) {
+                return a.point[i] < b.point[i];
             }
         }
-
     }
+    
+    return false; 
+}
+
+void Function::lexisort(){
+    
+    std::sort(monomials.begin(), monomials.end(), compare);
+}
+
+Monomial Function::lm(){
+    // assume in lexiographic order first...
+    return monomials.back();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int Function::max_deg(int dim){
+    int maximum = std::numeric_limits<int>::lowest();
+    for(Monomial m : monomials){
+        maximum = max(maximum, m.deg(dim));
+    }
+}
+
+int Function::min_deg(int dim){
+    int minimum = std::numeric_limits<int>::max();
+    for(Monomial m : monomials){
+        minimum = min(minimum, m.deg(dim));
+    }
+}
+
+vector<Function> Function::group(int dim){
+    vector<Function> coefficents(max_deg(dim) - min_deg(dim) + 1, Function({})); 
+    for(int i = 0; i < coefficents.size(); i++){
+        coefficents[i].wrt = dim;
+        coefficents[i].power = i + min_deg(dim);
+    }
+
+    for(Monomial m : monomials){
+        int index = m.deg(dim);
+        coefficents[index] += m.coefficent(dim);
+    }
+    return coefficents;
 }
 
 void Function::operator+=(Function f){
     *this = *this + f;
+}
+
+void Function::operator-=(Function f){
+    *this = *this - f;
 }
 
 void Function::operator*=(Function f){
@@ -137,14 +164,129 @@ void Function::operator*=(Function f){
 
 
 
-// long division?....
-//  Function Q();
-//     Function R = *this; // dividend
 
-//     while(R.deg() >= deg()){
-//         float c = R.alpha.back() / f.alpha.back();
-//         Q[R.deg() - f.deg()] = c;
-//         R = R - f * c;
+void Function::operator+=(Monomial other){
+    *this = *this + other;
+}
+
+Function Function::operator*(Monomial other){
+    return *this * Function({other});
+}
+
+
+
+
+// Function Function::gcf(Function other){
+
+//     Function a = *this;
+//     Function b = other;
+//     Function remainder({});
+
+//     while(!b.is_constant()){
+//         remainder = (a / b)[1];  // Get remainder
+//         a = b;
+//         b = remainder;
 //     }
 
-//     return {Function(Q), Function(R.alpha, f.alpha)};
+//     if(b.monomials[0].number == 0){
+//         return a;
+//     } else {
+//         return Function({Monomial({0}, {0}, 1)}); // coprime
+//     }
+// }
+
+// Function Function::lcm(Function other){
+//     return ((*this * other) / this->gcf(other))[0];
+// }
+
+
+
+
+
+// check if constant function?....
+
+
+
+
+
+
+
+
+
+vector<string> alphabet = { // no i or e    
+    "a", "b", "c", "d", "f", 
+    "g", "h", "j", "k", "l", 
+    "m", "n", "o", "p", "q",
+    "r", "s", "t", "u", "v", 
+    "w", "x", "y", "z", "A", 
+    "B", "C", "D", "E", "F", 
+    "G", "H", "I", "J", "K", 
+    "L", "M", "N", "O", "P",
+    "Q", "R", "S", "T", "U", 
+    "V", "W", "X", "Y", "Z"
+};
+
+int digits(int number){
+    if(number == 0){
+        return 1;
+    }
+
+    if(number < 0){
+        number *= -1;
+    }
+
+    int size = 0;
+    while(number > 0){
+        number /= 10;
+        size++;
+    }
+    return size;
+}
+
+void Function::print(){
+    string s = "";
+    for(int i = 0; i < monomials.size(); i++){
+        Monomial monomial = monomials[i];
+        int number = monomial.number;
+
+        if(!(number == 0)){
+
+            if(i == 0){
+                if(number < 0){
+                    s += "-";
+                }
+            } else {
+                if(number > 0){
+                    s += " + ";
+                } else {
+                    s += " - ";
+                }
+            }
+
+            if(!(number == 1) || monomial.constant()){
+                s += to_string(abs(number)); 
+            }
+            
+            for(int j = 0; j < monomial.shell.size(); j++){
+                int power = monomial.point[j];
+                if(!(power == 0)){
+                    s += alphabet[monomial.shell[j]];
+                    if(!(power == 1)){
+                        s += "^";
+                        if(digits(power) > 1){
+                            s += "(";
+                            s += to_string(power);
+                            s += ")";
+                        } else {
+                            s += to_string(power);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    cout << s << "\n\n";
+
+}
+
+
