@@ -213,7 +213,7 @@ Function Function::operator*(Monomial other){
 
 
 
-vector<string> alphabet = { // no i or e    
+vector<string> my_alphabet = { // no i or e    
     "a", "b", "c", "d", "f", 
     "g", "h", "j", "k", "l", 
     "m", "n", "o", "p", "q",
@@ -270,7 +270,7 @@ void Function::print(){
             for(int j = 0; j < monomial.shell.size(); j++){
                 int power = monomial.point[j];
                 if(!(power == 0)){
-                    s += alphabet[monomial.shell[j]];
+                    s += my_alphabet[monomial.shell[j]];
                     if(!(power == 1)){
                         s += "^";
                         if(digits(power) > 1){
