@@ -280,3 +280,69 @@ namespace String {
 
 
 }
+
+
+
+
+
+
+
+// bool greater_than_one(string x){
+//     if(Token::digits(x) > 1 || !isalpha(x[0])){
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
+
+// string Tree::get_string(string s){
+//     if(alpha == nullptr && beta == nullptr){
+//         s += node;
+//         return s;
+//     } else {
+//         string a = alpha->get_string(s);
+//         string b = beta->get_string(s);
+
+//         if(Token::is_operator(node[0])){
+//             if(node[0] == '+'){
+//                 s += a + " + " + b;
+//             } else if(node[0] == '-'){
+//                 s += a + " - ";
+//                 if(greater_than_one(b)){
+//                     s += "(" + b + ")";
+//                 } else {
+//                     s += b;
+//                 }
+//             } else if(node[0] == '*'){
+//                 if(greater_than_one(a) && greater_than_one(b)){
+//                     if(greater_than_one(a)){
+//                         a = "(" + a + ")";
+//                     } 
+//                     if(greater_than_one(b)){
+//                         b = "(" + b + ")";
+//                     }
+//                 } else if(isnumber(a[0]) && isnumber(b[0])){
+//                     b = "(" + b + ")";
+//                 }
+
+//                 s += a + b;
+//             } else if(node[0] == '/' || node[0] == '^'){
+//                 if(greater_than_one(a)){
+//                     a = "(" + a + ")";
+//                 }
+
+//                 if(greater_than_one(b)){
+//                     b = "(" + b + ")";
+//                 }
+
+//                 if(node[0] == '/'){
+//                     s += a + " / " + b;
+//                 } else if(node[0] == '^'){
+//                     s += a + "^" + b;
+//                 }
+//             }
+//         }
+
+//         return s;
+//     }
+// }

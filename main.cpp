@@ -14,37 +14,32 @@ using namespace cv;
 int main(){
 
 
-
-
-    // Tree a;
-    // a.node = "^";
-    // a.alpha = new Tree;
-    // a.beta = new Tree;
-    // a.alpha->node = "a";
-    // a.beta->node = "5";
-
-    // Tree b;
-    // b.node = "*";
-    // b.alpha = new Tree;
-    // b.beta = new Tree;
-    // b.alpha->node = "3";
-    // b.beta->node = "a";
-
-    // Tree c = a + b; 
-    // int value = c.at({0}, {1});
-    // cout << value << "\n";
-
-    // c.print();
     
-
-    Tree tree;  
-    tree.read("a*b*c^2+2+4");
-
-    tree.print();
-    cout << tree.at({0, 1}, {2, 3});
+    Tree t;
+    t.read("x^2");
+    Tree d = t.partial(t, 'x');
+    d.simplfy();
 
 
 
+    // vector<Tree*> trees = {};
+    // trees = tree.sub_trees(trees);
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // doesnt read negative numbers. only reads subtracction.... 
+    // as of now....
+    // perhaps interpret negative numbers as subtraction operation?....
  
 
  
@@ -133,6 +128,7 @@ int main(){
 
 
 
+    cout << "ahh";
 
 
 

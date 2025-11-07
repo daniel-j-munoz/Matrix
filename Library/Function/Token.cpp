@@ -37,6 +37,8 @@ int Token::digits(string text){
     for (char c : text) {
         if (isdigit(static_cast<unsigned char>(c))) {
             count++;
+        } else {
+            return 0;
         }
     }
     return count;
