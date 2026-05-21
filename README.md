@@ -1,0 +1,1 @@
+CAS, Linear Algebra & image handling written in pure C++. Each aspect blends well together. Meant to sort of extend and genearlize a programs math capabilities. Very useful in image/audio processing, machine learning, etc. The project is a very rough proposal & there is MUCH to be added & fixed.
