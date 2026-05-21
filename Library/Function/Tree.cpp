@@ -17,7 +17,7 @@ Tree::Tree(){
 
 // change partial name to wrt?....w
 // e..g wrt()?...
-Tree Tree::partial(Tree output, char letter){
+Tree Tree::partial(char letter){
     if(node[0] == letter){
         Tree tree;
         tree.node = "1";
@@ -30,36 +30,23 @@ Tree Tree::partial(Tree output, char letter){
         Tree* b = trees[1];
 
         Tree list;
-        list.node = "+";
-
-        Tree* left = new Tree;
-        left->node = "*";
-        left->trees.push_back(new Tree(*b)); // b
-        left->trees.push_back(new Tree(a->partial(*a, letter))); // a'
-        left->trees.push_back(new Tree(*a ^ (*b - one))); // a^(b - 1)
+        list.node = "*";
+        list.trees.push_back(new Tree(*b)); // b
+        list.trees.push_back(new Tree(a->partial(letter))); // a'
+        list.trees.push_back(new Tree(*a ^ (*b - one))); // a^(b - 1)
         
-        Tree* right = new Tree;
-        right->node = "*";
-        right->trees.push_back(new Tree(b->partial(*b, letter))); // b'
-        right->trees.push_back(new Tree(a->ln())); // ln(a)
-        right->trees.push_back(new Tree(*a^*b)); // a^b
-
-        list.trees.push_back(left);
-        list.trees.push_back(right);
+        Tree term;
+        term.node = "*";
+        term.trees.push_back(new Tree(b->partial(letter))); // b'
+        term.trees.push_back(new Tree(a->ln())); // ln(a)
+        term.trees.push_back(new Tree(*a^*b)); // a^b
         
-        return list;
-    } else if(node[0] == '+'){ 
+        return list + term;
+    } else if(node[0] == '+' || node[0] == '-'){ 
         Tree list;
-        list.node = "+";
+        list.node = (node[0] == '+') ? "+" : "-";
         for(Tree* tree : trees){
-            list.trees.push_back(new Tree(tree->partial(*tree, letter)));
-        }
-        return list;
-    } else if(node[0] == '-'){
-        Tree list;
-        list.node = "-";
-        for(Tree* tree : trees){
-            list.trees.push_back(new Tree(tree->partial(*tree, letter)));
+            list.trees.push_back(new Tree(tree->partial(letter)));
         }
         return list;
     } else if(node[0] == '*'){
@@ -71,7 +58,7 @@ Tree Tree::partial(Tree output, char letter){
             product.node = "*";
             for(int j = 0; j < trees.size(); j++){
                 if(i == j){
-                    product.trees.push_back(new Tree(trees[j]->partial(*trees[j], letter)));
+                    product.trees.push_back(new Tree(trees[j]->partial(letter)));
                 } else {
                     product.trees.push_back(new Tree(*trees[j]));
                 }
@@ -325,6 +312,11 @@ void Tree::operator/=(Tree other){
 
 
 void Tree::read(string text){
+
+    // maybe read before hand. look for stuff like xy.
+    // or 5x and insert a '*' symbol then read.?>....
+
+
     deque<string> list = Token::shunting_yard(Token::tokens(text)); 
 
     deque<Tree*> output;

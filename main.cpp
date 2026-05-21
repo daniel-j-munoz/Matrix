@@ -16,8 +16,8 @@ int main(){
 
     
     Tree t;
-    t.read("x^2");
-    Tree d = t.partial(t, 'x');
+    t.read("x^3 + 5 * x + x^2");
+    Tree d = t.partial('x');
     d.simplfy();
 
 

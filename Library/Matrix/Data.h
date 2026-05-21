@@ -31,6 +31,7 @@ class Data {
 
 
         // sort shuffle?...
+        // frequencies/historgram?
 
 
 
@@ -41,6 +42,12 @@ class Data {
 
         // Unitizing and Zeroing 
         // normalizing and stuff....
+
+
+        // okay, rather than coming up with an explicit method
+        // for nomralizing things like this.
+        // simply do something like 
+        // A / A.L2();  very straightforeword, no need for method?.....
         static void unit_L(float p, Matrix *A);
         static void unit_L2(Matrix *A);
 

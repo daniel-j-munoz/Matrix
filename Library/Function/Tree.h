@@ -13,7 +13,7 @@ class Tree {
         Tree();
 
         vector<Tree*> sub_trees(vector<Tree*> trees);
-        Tree partial(Tree output, char letter);
+        Tree partial(char letter);
         bool contains(Tree tree);
 
 
